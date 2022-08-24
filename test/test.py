@@ -25,6 +25,9 @@ class testNDict:
         self.test_init()
         print("Pass init test.")
 
+        self.test_from_flatten_dict()
+        print("Pass from flatten test.")
+
         self.test_paths()
         print("Pass paths test.")
 
@@ -63,6 +66,12 @@ class testNDict:
         del nd1["task;task"]
         self.nd["task;task"]
         assert nd1 != self.nd
+
+    def test_from_flatten_dict(self):
+        nd1 = NDict.from_flatten_dict(self.nd)
+        assert nd1 is not self.nd
+        assert nd1._d is not self.nd._d
+        assert nd1 == self.nd
 
     def test_copy(self):
         assert self.nd.copy() is not self.nd

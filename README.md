@@ -72,6 +72,7 @@ with open("test.yaml", "r") as f:
   raw = yaml.safe_load(f)
 nd = NDict(raw)
 
+nd1 = NDict.from_flatten_dict(nd.flatten_dict) # nd1 == nd
 "task;path" in nd                      # "task" in raw and "path" in raw["task"]
 del nd["task;path"]                    # del raw["task]["path]
 nd["task;path"] = "cwd"                # raw["task"]["path"] = Path(".").absolute()

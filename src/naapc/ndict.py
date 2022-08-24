@@ -15,6 +15,12 @@ class NDict:
             raise TypeError(f"Unexpected type {type(dictionary)}.")
         self._update_flatten()
 
+    @classmethod
+    def from_flatten_dict(cls, flatten_dict):
+        nd = cls({})
+        nd.update(flatten_dict)
+        return nd
+
     ### internal manipulation ###
     def _update_flatten(self) -> None:
         flatten = {}

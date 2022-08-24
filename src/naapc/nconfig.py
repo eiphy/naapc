@@ -93,11 +93,6 @@ class NConfig(NDict):
 
         return extra_args
 
-    ### setters & updators ###
-    def update(self, d, ignore_missing_path=False):
-        super(NConfig, self).update(d, ignore_missing_path)
-        self._check_types()
-
     ### getters ###
     @property
     def str_configs(self):
