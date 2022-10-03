@@ -1,3 +1,4 @@
+import argparse
 from copy import deepcopy
 from pathlib import Path
 from typing import Union
@@ -5,6 +6,8 @@ from typing import Union
 import yaml
 
 from .ndict import NDict
+
+NDictOrDict = Union[NDict, dict]
 
 
 class CustomArgs:
@@ -17,7 +20,7 @@ class CustomArgs:
         choices=None,
         default=None,
         isbool=False,
-    ):
+    ) -> None:
         self.flag = flag
         self.atype = atype
         self.path = path
@@ -35,7 +38,7 @@ class NConfig(NDict):
     reserved_keys = [_arg_key]
     allowable_types = [int, str, float, bool, type(None)]
 
-    def __init__(self, config):
+    def __init__(self, config: NDictOrDict) -> None:
         config = deepcopy(config)
         if self._arg_key in config:
             self._arg_specification = config[self._arg_key]
@@ -45,7 +48,7 @@ class NConfig(NDict):
         super(NConfig, self).__init__(config)
         self._check_types()
 
-    def parse_update(self, parser, args):
+    def _get_custom_args(self) -> list[CustomArgs]:
         custom_args = []
         for path, v in self._flatten_dict.items():
             if isinstance(v, list):
@@ -76,6 +79,12 @@ class NConfig(NDict):
             carg.update(spec)
             custom_args.append(CustomArgs(**carg))
 
+        return custom_args
+
+    def add_to_argparse(
+        self, parser: argparse.ArgumentParser
+    ) -> argparse.ArgumentParser:
+        custom_args = self._get_custom_args()
         for carg in custom_args:
             parser.add_argument(
                 carg.flag,
@@ -84,6 +93,10 @@ class NConfig(NDict):
                 choices=carg.choices,
                 default=carg.default,
             )
+        return parser
+
+    def parse_update(self, parser, args) -> list:
+        custom_args = self._get_custom_args()
 
         args, extra_args = parser.parse_known_args(args)
         for carg in custom_args:

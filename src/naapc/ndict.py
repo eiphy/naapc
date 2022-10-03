@@ -7,6 +7,7 @@ from typing import Any
 
 class NDict:
     def __init__(self, dictionary: dict) -> None:
+        dictionary = deepcopy(dictionary)
         if isinstance(dictionary, NDict):
             self._d = dictionary.raw_dict
         elif isinstance(dictionary, dict):
@@ -16,7 +17,7 @@ class NDict:
         self._update_flatten()
 
     @classmethod
-    def from_flatten_dict(cls, flatten_dict):
+    def from_flatten_dict(cls, flatten_dict: dict) -> "NDict":
         nd = cls({})
         nd.update(flatten_dict)
         return nd
@@ -149,6 +150,3 @@ class NDict:
     def __eq__(self, other) -> bool:
         assert isinstance(other, NDict), f"Unexpected type {type(other)}"
         return self._flatten_dict == other._flatten_dict
-
-    def copy(self):
-        return deepcopy(self)

@@ -87,7 +87,6 @@ nd.keys()                              # raw.keys()
 nd.values()                            # raw.values()
 len(nd)                                # len(raw)
 bool(nd)                               # len(nd) > 0
-nd1 = nd.copy()                        # nd1 = deepcopy(nd)
 nd1 == nd                              # nd1.flatten_dict == nd.flatten_dict
 nd1["task;path"] = "xcwd"
 nd1["task;extra"] = "ecwd"
@@ -102,6 +101,8 @@ Note that argument specification ("_ARGUMENT_SPECIFICATION") does not count as p
 
 ```python
 config.save("path.yaml")               # Save configurations as a yaml file
+config.add_to_argparse(parser)    # Generate cli arguments for every configuration.
+config.parse_update(parser, args)      # Parse cli arguments and update corresponding configuration. Extra arguments will be returned.
 ```
 
 Other functionalities are the same to NDict.

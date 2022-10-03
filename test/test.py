@@ -3,7 +3,6 @@ import os
 import sys
 from copy import deepcopy
 from pathlib import Path
-from signal import raise_signal
 from typing import Any
 
 import yaml
@@ -16,7 +15,6 @@ from naapc import NConfig, NDict
 class testNDict:
     def __init__(self):
         self.nd = NDict({"this": "is test"})
-        self.test_copy()
         print("Pass copy test.")
 
         with open("test/config.yaml", "r") as f:
@@ -57,7 +55,6 @@ class testNDict:
 
     def test_init(self):
         nd1 = NDict(self.nd)
-        assert nd1._d is self.nd._d
         assert nd1 == self.nd
 
         nd1 = NDict(deepcopy(self.nd._d))
@@ -73,16 +70,12 @@ class testNDict:
         assert nd1._d is not self.nd._d
         assert nd1 == self.nd
 
-    def test_copy(self):
-        assert self.nd.copy() is not self.nd
-        assert self.nd.copy().flatten_dict == self.nd.flatten_dict
-
     def test_eq(self):
-        nd = self.nd.copy()
+        nd = deepcopy(self.nd)
         assert nd == self.nd
         nd["task;task"] = "not_exist"
         assert nd != self.nd
-        nd = self.nd.copy()
+        nd = deepcopy(self.nd)
         nd["not_exist"] = "not_exist"
         assert nd != self.nd
 
@@ -110,7 +103,7 @@ class testNDict:
 
     def test_del(self):
         for path in self.nd.paths:
-            nd = self.nd.copy()
+            nd = deepcopy(self.nd)
             del nd[path]
             diff = set(self.nd.paths) - set(nd.paths)
             assert all(p.startswith(path) for p in diff)
@@ -147,7 +140,7 @@ class testNDict:
             _check([], k, v, self.nd.flatten_dict)
 
     def test_setitem(self):
-        nd = self.nd.copy()
+        nd = deepcopy(self.nd)
         for path in nd.flatten_dict.keys():
             nd[path] = 1
 
@@ -156,7 +149,7 @@ class testNDict:
         for v in nd.flatten_dict.values():
             assert v == 1
 
-        nd = self.nd.copy()
+        nd = deepcopy(self.nd)
         nd["not_exist;not_exist;not_exist;not_exist"] = "not_exist"
         assert "not_exist" in nd
         assert "not_exist;not_exist" in nd
@@ -167,7 +160,7 @@ class testNDict:
         assert nd != self.nd
 
     def test_update(self):
-        nd = self.nd.copy()
+        nd = deepcopy(self.nd)
 
         fd = {path: 1 for path in self.nd.flatten_dict.keys()}
         nd.update(fd)
@@ -177,14 +170,14 @@ class testNDict:
         for v in nd.flatten_dict.values():
             assert v == 1
 
-        nd1 = self.nd.copy()
+        nd1 = deepcopy(self.nd)
         nd1.update(nd)
         assert nd1 != self.nd
         assert set(nd1.paths) == set(self.nd.paths)
         for v in nd1.flatten_dict.values():
             assert v == 1
 
-        nd = self.nd.copy()
+        nd = deepcopy(self.nd)
         fd = {"not_exist;not_exist;not_exist": "not_exist"}
         try:
             nd.update(fd)
@@ -200,7 +193,7 @@ class testNDict:
         assert nd != self.nd
 
     def test_compare(self):
-        nd = self.nd.copy()
+        nd = deepcopy(self.nd)
         assert not nd.compare_dict(self.nd)
         assert not self.nd.compare_dict(nd)
         assert nd.compare_dict(self.nd) == self.nd.compare_dict(nd)
@@ -214,7 +207,7 @@ class testNDict:
             assert nd.compare_dict(self.nd) == diff1
             assert self.nd.compare_dict(nd) == diff2
 
-        nd = self.nd.copy()
+        nd = deepcopy(self.nd)
         diff1 = {}
         diff2 = {}
         for path, v in self.nd.flatten_dict.items():
@@ -226,7 +219,7 @@ class testNDict:
             assert nd.compare_dict(self.nd) == diff1
             assert self.nd.compare_dict(nd) == diff2
 
-        nd = self.nd.copy()
+        nd = deepcopy(self.nd)
         nd["not_exist;not_exist;not_exist"] = "not_exist"
         assert nd.compare_dict(self.nd) == {
             "not_exist;not_exist;not_exist": ("not_exist", None)
@@ -270,10 +263,9 @@ class testNConfig:
 
         config = NConfig(self.rawd)
         assert config == self.nd
-        assert config._d is not self.rawd
+        assert config != nd_spe
 
         config = NConfig(nd_spe)
-        assert config != nd_spe
         assert config._arg_specification
         assert config._d is not self.rawd
 
@@ -326,6 +318,7 @@ class testNConfig:
                 args, extra_args = parser.parse_known_args(
                     [flag, str(_get_test_value(v))]
                 )
+            parser = config.add_to_argparse(parser)
             extra_args = config.parse_update(parser, extra_args)
             assert len(extra_args) == 0
             if path == "data;dataset":
@@ -336,7 +329,7 @@ class testNConfig:
                 else:
                     target = _get_test_value(v)
                 assert config[path] == target
-            _nd_spe = nd_spe.copy()
+            _nd_spe = deepcopy(nd_spe)
             del _nd_spe["_ARGUMENT_SPECIFICATION"]
             for _path, _v in _nd_spe.flatten_dict.items():
                 if _path != path:
@@ -345,7 +338,7 @@ class testNConfig:
                     assert config[_path] != _v
 
     def test_update(self):
-        config = self.config.copy()
+        config = deepcopy(self.config)
 
         fd = {path: 1 for path in self.config.flatten_dict.keys()}
         config.update(fd)
@@ -355,14 +348,14 @@ class testNConfig:
         for v in config.flatten_dict.values():
             assert v == 1
 
-        config1 = self.config.copy()
+        config1 = deepcopy(self.config)
         config1.update(config)
         assert config1 != self.config
         assert set(config1.paths) == set(self.config.paths)
         for v in config1.flatten_dict.values():
             assert v == 1
 
-        config = self.config.copy()
+        config = deepcopy(self.config)
         fd = {"not_exist;not_exist;not_exist": "not_exist"}
         try:
             config.update(fd)
@@ -384,7 +377,7 @@ class testNConfig:
             pass
 
     def test_setitem(self):
-        config = self.config.copy()
+        config = deepcopy(self.config)
         for path in config.flatten_dict.keys():
             config[path] = 1
 
@@ -393,7 +386,7 @@ class testNConfig:
         for v in config.flatten_dict.values():
             assert v == 1
 
-        config = self.config.copy()
+        config = deepcopy(self.config)
         config["not_exist;not_exist;not_exist;not_exist"] = "not_exist"
         assert "not_exist" in config
         assert "not_exist;not_exist" in config
