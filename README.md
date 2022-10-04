@@ -106,3 +106,9 @@ config.parse_update(parser, args)      # Parse cli arguments and update correspo
 ```
 
 Other functionalities are the same to NDict.
+
+## Typing
+Add a type
+```python
+NestedOrDict = Union[NConfig, NDict, dict]
+```
