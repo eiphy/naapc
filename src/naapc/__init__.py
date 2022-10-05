@@ -1,8 +1,6 @@
 from typing import Union
 
 from .nconfig import CustomArgs, NConfig
-from .ndict import NDict
+from .ndict import NDict, NestedOrDict
 
-NestedOrDict = Union[NConfig, NDict, dict]
-
-__version__ = "1.2.0"
+__version__ = "1.3.0"

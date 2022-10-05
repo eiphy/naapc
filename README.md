@@ -98,11 +98,28 @@ nd.compare_dict(nd1)                   # {"task;path": ("cwd", "xcwd"), "task;ex
 NConfig only supports int, str, float, bool, and list of these types.
 The NConfig automatically checks data type when modifications are applied.
 Note that argument specification ("_ARGUMENT_SPECIFICATION") does not count as part of the configurations but will be saved when use save() method.
+The path specified as "_IGNORE_IN_CLI" will not be added to the parser.
 
 ```python
 config.save("path.yaml")               # Save configurations as a yaml file
-config.add_to_argparse(parser)    # Generate cli arguments for every configuration.
+config.add_to_argparse(parser)         # Generate cli arguments for every configuration.
 config.parse_update(parser, args)      # Parse cli arguments and update corresponding configuration. Extra arguments will be returned.
+```
+
+Typical specifications are as follows:
+```yaml
+_ARGUMENT_SPECIFICATION:
+  task;task:
+    flag: --task
+  task;seed:
+    flag: --seed
+  task;device:
+    flag: -d
+  data;dataset:
+    choices: ["cifar", "imagenet", "asap"]
+  log;comet_ml_key:
+    _IGNORE_IN_CLI
+
 ```
 
 Other functionalities are the same to NDict.
@@ -110,5 +127,5 @@ Other functionalities are the same to NDict.
 ## Typing
 Add a type
 ```python
-NestedOrDict = Union[NConfig, NDict, dict]
+NestedOrDict = Union[NDict, dict]
 ```

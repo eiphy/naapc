@@ -5,21 +5,19 @@ from typing import Union
 
 import yaml
 
-from .ndict import NDict
-
-NDictOrDict = Union[NDict, dict]
+from .ndict import NDict, NestedOrDict
 
 
 class CustomArgs:
     def __init__(
         self,
-        flag=None,
+        flag: str = None,
         atype=None,
-        path=None,
-        nargs=None,
-        choices=None,
+        path: str = None,
+        nargs: str = None,
+        choices: list = None,
         default=None,
-        isbool=False,
+        isbool: bool = False,
     ) -> None:
         self.flag = flag
         self.atype = atype
@@ -34,11 +32,16 @@ class CustomArgs:
 
 
 class NConfig(NDict):
+    """Nested configuration based on NDict class."""
+
     _arg_key = "_ARGUMENT_SPECIFICATION"
-    reserved_keys = [_arg_key]
+    _ignore_key = "_IGNORE_IN_CLI"
+    reserved_keys = [_arg_key, _ignore_key]
+
+    # List is also allowed.
     allowable_types = [int, str, float, bool, type(None)]
 
-    def __init__(self, config: NDictOrDict) -> None:
+    def __init__(self, config: NestedOrDict) -> None:
         config = deepcopy(config)
         if self._arg_key in config:
             self._arg_specification = config[self._arg_key]
@@ -49,8 +52,12 @@ class NConfig(NDict):
         self._check_types()
 
     def _get_custom_args(self) -> list[CustomArgs]:
+        """Generate customized arguments."""
         custom_args = []
         for path, v in self._flatten_dict.items():
+            spec = self._arg_specification.get(path, {})
+            if spec == self._ignore_key:
+                continue
             if isinstance(v, list):
                 atype = type(v[0])
                 nargs = "+"
@@ -74,7 +81,6 @@ class NConfig(NDict):
                 "default": v,
             }
 
-            spec = self._arg_specification.get(path, {})
             assert all(k != "atype" for k in spec.keys())
             carg.update(spec)
             custom_args.append(CustomArgs(**carg))
@@ -84,6 +90,15 @@ class NConfig(NDict):
     def add_to_argparse(
         self, parser: argparse.ArgumentParser
     ) -> argparse.ArgumentParser:
+        """Add arguments to parser.
+        For a path "task;task", the argument is specified as "--task__task".
+        The type is inferred from the configuration file.
+        Use integer 1 and 0 for boolean values.
+        For list, nargs are automatically configured.
+
+        The flag, type, and other options can be customized. See README.md.
+        Use "_IGNORE_IN_CLI" to omit the path when adding to parse.
+        """
         custom_args = self._get_custom_args()
         for carg in custom_args:
             parser.add_argument(
@@ -96,6 +111,7 @@ class NConfig(NDict):
         return parser
 
     def parse_update(self, parser, args) -> list:
+        """Parse CLI arguments and update the configurations accordingly."""
         custom_args = self._get_custom_args()
 
         args, extra_args = parser.parse_known_args(args)
@@ -108,14 +124,16 @@ class NConfig(NDict):
 
     ### getters ###
     @property
-    def str_configs(self):
-        d = self.copy()
+    def str_configs(self) -> "NConfig":
+        """Return NConfig object with every value in string."""
+        d = deepcopy(self)
         for path, v in self._flatten_dict.items():
             d[path] = str(v)
         return d
 
     ### miscs ###
-    def save(self, path):
+    def save(self, path: Union[Path, str]) -> None:
+        """Save the configuraion. CLI specification will also be saved."""
         path = Path(path)
         path.parent.mkdir(exist_ok=True, parents=True)
         if self._arg_specification:
@@ -127,6 +145,9 @@ class NConfig(NDict):
 
     ### check ###
     def _check_type_v(self, v):
+        """Check the data type for a single value. The allowaed dtype is stated
+        in self.allowable_types.
+        """
         return (
             all(any(isinstance(x, t) for t in self.allowable_types) for x in v)
             if isinstance(v, list)
@@ -134,6 +155,7 @@ class NConfig(NDict):
         )
 
     def _check_types(self):
+        """Check the data type. Call _check_type_v on each entry."""
         for path, v in self.flatten_dict.items():
             assert self._check_type_v(
                 v
@@ -141,5 +163,6 @@ class NConfig(NDict):
 
     ### magics ###
     def __setitem__(self, path: str, value: Union[str, int, float, bool]):
+        """Same to NDict but do type checking."""
         self._check_type_v(value)
         super(NConfig, self).__setitem__(path, value)

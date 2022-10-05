@@ -159,3 +159,5 @@ _ARGUMENT_SPECIFICATION:
     flag: -d
   data;dataset:
     choices: ["cifar", "imagenet", "asap"]
+  log;comet_ml_key:
+    _IGNORE_IN_CLI

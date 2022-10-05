@@ -301,6 +301,13 @@ class testNConfig:
         for path, v in config.flatten_dict.items():
             config = NConfig(nd_spe)
             parser = argparse.ArgumentParser()
+            if config._arg_specification.get(path, None) == config._ignore_key:
+                parser = config.add_to_argparse(parser)
+                flag = f"--{path.replace(';', '__')}"
+                _args = [flag, "1"]
+                args, extra_args = parser.parse_known_args(_args)
+                assert extra_args == _args
+                continue
             if (
                 path in config._arg_specification
                 and "flag" in config._arg_specification[path]

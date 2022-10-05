@@ -2,11 +2,11 @@ import json
 from copy import deepcopy
 from functools import reduce
 from operator import getitem
-from typing import Any
+from typing import Any, Union
 
 
 class NDict:
-    def __init__(self, dictionary: dict) -> None:
+    def __init__(self, dictionary: Union["NDict", dict]) -> None:
         dictionary = deepcopy(dictionary)
         if isinstance(dictionary, NDict):
             self._d = dictionary.raw_dict
@@ -150,3 +150,6 @@ class NDict:
     def __eq__(self, other) -> bool:
         assert isinstance(other, NDict), f"Unexpected type {type(other)}"
         return self._flatten_dict == other._flatten_dict
+
+
+NestedOrDict = Union[NDict, dict]
