@@ -13,7 +13,7 @@ from naapc import NConfig, NDict
 
 
 class testNDict:
-    def __init__(self):
+    def __init__(self, delimiter=";"):
         self.nd = NDict({"this": "is test"})
         print("Pass copy test.")
 
@@ -53,55 +53,65 @@ class testNDict:
         self.test_compare()
         print("Pass compare test.")
 
-    def test_init(self):
-        nd1 = NDict(self.nd)
+        self.test_delimiter()
+        print("Pass delimiter test.")
+
+    def test_init(self, delimiter=";"):
+        nd1 = NDict(self.nd, delimiter=delimiter)
         assert nd1 == self.nd
 
-        nd1 = NDict(deepcopy(self.nd._d))
+        nd1 = NDict(deepcopy(self.nd._d), delimiter=delimiter)
         assert nd1 is not self.nd
         assert nd1 == self.nd
-        del nd1["task;task"]
-        self.nd["task;task"]
+        del nd1[f"task{delimiter}task"]
+        self.nd[f"task{delimiter}task"]
         assert nd1 != self.nd
 
-    def test_from_flatten_dict(self):
-        nd1 = NDict.from_flatten_dict(self.nd)
+    def test_from_flatten_dict(self, delimiter=";"):
+        nd1 = NDict.from_flatten_dict(self.nd, delimiter=delimiter)
         assert nd1 is not self.nd
         assert nd1._d is not self.nd._d
         assert nd1 == self.nd
 
-    def test_eq(self):
+        nd1 = NDict.from_flatten_dict(self.nd.flatten_dict, delimiter=delimiter)
+        assert nd1 is not self.nd
+        assert nd1._d is not self.nd._d
+        assert nd1 == self.nd
+
+    def test_eq(self, delimiter=";"):
         nd = deepcopy(self.nd)
         assert nd == self.nd
-        nd["task;task"] = "not_exist"
+        nd[f"task{delimiter}task"] = "not_exist"
         assert nd != self.nd
         nd = deepcopy(self.nd)
         nd["not_exist"] = "not_exist"
         assert nd != self.nd
 
         d = deepcopy(self.nd.raw_dict)
-        nd = NDict(d)
+        nd = NDict(d, delimiter=delimiter)
         assert nd == self.nd
         del d["task"]
-        nd = NDict(d)
+        nd = NDict(d, delimiter=delimiter)
         assert nd != self.nd
 
-    def test_paths(self):
+    def test_paths(self, delimiter=";"):
         for p in self.nd.paths:
             self.nd[p]
 
         all_paths = []
         for path in self.nd.flatten_dict.keys():
-            nodes = path.split(";")
-            all_paths.extend(";".join(nodes[:i]) for i in range(1, len(nodes) + 1))
+            nodes = path.split(delimiter)
+            all_paths.extend(
+                delimiter.join(nodes[:i]) for i in range(1, len(nodes) + 1)
+            )
         assert set(self.nd.paths) == set(all_paths)
 
-    def test_contains(self):
+    def test_contains(self, delimiter=";"):
         for p in self.nd.paths:
             assert p in self.nd
-            assert f"{p};fwejkl" not in self.nd
+            assert f"{p}{delimiter}fwejkl" not in self.nd
 
-    def test_del(self):
+    def test_del(self, delimiter=";"):
         for path in self.nd.paths:
             nd = deepcopy(self.nd)
             del nd[path]
@@ -109,9 +119,9 @@ class testNDict:
             assert all(p.startswith(path) for p in diff)
             assert nd != self.nd
 
-    def test_getitem(self):
+    def test_getitem(self, delimiter=";"):
         def _check(pks, k, v, nd):
-            path = ";".join(pks + [k])
+            path = delimiter.join(pks + [k])
             assert nd[path] == v, f"Wong at {path}. raw: {v}, nd: {nd}"
             if isinstance(v, dict):
                 for nk, nv in v.items():
@@ -120,14 +130,14 @@ class testNDict:
         for k, v in self.rawd.items():
             _check([], k, v, self.nd)
 
-    def test_flatten(self):
+    def test_flatten(self, delimiter=";"):
         for path, v in self.nd.flatten_dict.items():
             assert (
                 self.nd[path] == v
             ), f"Wrong at {path}. nd: {self.nd[path]}, flatten: {v}"
 
         def _check(pks, k, v, flatten):
-            path = ";".join(pks + [k])
+            path = delimiter.join(pks + [k])
             if isinstance(v, dict):
                 for nk, nv in v.items():
                     _check(pks + [k], nk, nv, flatten)
@@ -139,7 +149,7 @@ class testNDict:
         for k, v in self.rawd.items():
             _check([], k, v, self.nd.flatten_dict)
 
-    def test_setitem(self):
+    def test_setitem(self, delimiter=";"):
         nd = deepcopy(self.nd)
         for path in nd.flatten_dict.keys():
             nd[path] = 1
@@ -150,16 +160,24 @@ class testNDict:
             assert v == 1
 
         nd = deepcopy(self.nd)
-        nd["not_exist;not_exist;not_exist;not_exist"] = "not_exist"
+        nd[
+            f"not_exist{delimiter}not_exist{delimiter}not_exist{delimiter}not_exist"
+        ] = "not_exist"
         assert "not_exist" in nd
-        assert "not_exist;not_exist" in nd
-        assert "not_exist;not_exist;not_exist" in nd
-        assert "not_exist;not_exist;not_exist;not_exist" in nd
-        assert nd["not_exist;not_exist;not_exist;not_exist"] == "not_exist"
+        assert f"not_exist{delimiter}not_exist" in nd
+        assert f"not_exist{delimiter}not_exist{delimiter}not_exist" in nd
+        assert (
+            f"not_exist{delimiter}not_exist{delimiter}not_exist{delimiter}not_exist"
+            in nd
+        )
+        assert (
+            nd[f"not_exist{delimiter}not_exist{delimiter}not_exist{delimiter}not_exist"]
+            == "not_exist"
+        )
 
         assert nd != self.nd
 
-    def test_update(self):
+    def test_update(self, delimiter=";"):
         nd = deepcopy(self.nd)
 
         fd = {path: 1 for path in self.nd.flatten_dict.keys()}
@@ -178,7 +196,7 @@ class testNDict:
             assert v == 1
 
         nd = deepcopy(self.nd)
-        fd = {"not_exist;not_exist;not_exist": "not_exist"}
+        fd = {f"not_exist{delimiter}not_exist{delimiter}not_exist": "not_exist"}
         try:
             nd.update(fd)
             raise RuntimeError
@@ -186,13 +204,13 @@ class testNDict:
             pass
         nd.update(fd, ignore_missing_path=True)
         assert "not_exist" in nd
-        assert "not_exist;not_exist" in nd
-        assert "not_exist;not_exist;not_exist" in nd
-        assert nd["not_exist;not_exist;not_exist"] == "not_exist"
+        assert f"not_exist{delimiter}not_exist" in nd
+        assert f"not_exist{delimiter}not_exist{delimiter}not_exist" in nd
+        assert nd[f"not_exist{delimiter}not_exist{delimiter}not_exist"] == "not_exist"
 
         assert nd != self.nd
 
-    def test_compare(self):
+    def test_compare(self, delimiter=";"):
         nd = deepcopy(self.nd)
         assert not nd.compare_dict(self.nd)
         assert not self.nd.compare_dict(nd)
@@ -220,20 +238,35 @@ class testNDict:
             assert self.nd.compare_dict(nd) == diff2
 
         nd = deepcopy(self.nd)
-        nd["not_exist;not_exist;not_exist"] = "not_exist"
+        nd[f"not_exist{delimiter}not_exist{delimiter}not_exist"] = "not_exist"
         assert nd.compare_dict(self.nd) == {
-            "not_exist;not_exist;not_exist": ("not_exist", None)
+            f"not_exist{delimiter}not_exist{delimiter}not_exist": ("not_exist", None)
         }
         assert self.nd.compare_dict(nd) == {
-            "not_exist;not_exist;not_exist": (None, "not_exist")
+            f"not_exist{delimiter}not_exist{delimiter}not_exist": (None, "not_exist")
         }
+
+    def test_delimiter(self):
+        delimiter = "."
+        self.nd = NDict(self.rawd, delimiter=delimiter)
+        self.test_init(delimiter=delimiter)
+        self.test_from_flatten_dict(delimiter=delimiter)
+        self.test_paths(delimiter=delimiter)
+        self.test_contains(delimiter=delimiter)
+        self.test_eq(delimiter=delimiter)
+        self.test_del(delimiter=delimiter)
+        self.test_getitem(delimiter=delimiter)
+        self.test_flatten(delimiter=delimiter)
+        self.test_setitem(delimiter=delimiter)
+        self.test_update(delimiter=delimiter)
+        self.test_compare(delimiter=delimiter)
 
 
 class testNConfig:
-    def __init__(self):
+    def __init__(self, delimiter=";"):
         with open("test/config.yaml", "r") as f:
             self.rawd = yaml.safe_load(f)
-        self.nd = NDict(self.rawd)
+        self.nd = NDict(self.rawd, delimiter=delimiter)
 
         self.test_init()
         print("Pass init test.")
@@ -243,9 +276,9 @@ class testNConfig:
 
         with open("test/config_arg_spe.yaml", "r") as f:
             rawd_spe = yaml.safe_load(f)
-        nd_spe = NDict(rawd_spe)
+        nd_spe = NDict(rawd_spe, delimiter=delimiter)
 
-        self.config = NConfig(nd_spe)
+        self.config = NConfig(nd_spe, delimiter=delimiter)
 
         self.test_update()
         print("Pass update test.")
@@ -256,20 +289,23 @@ class testNConfig:
         self.test_save()
         print("Pass save test.")
 
-    def test_init(self):
+        self.test_delimiter()
+        print("Pass delimiter test.")
+
+    def test_init(self, delimiter=";"):
         with open("test/config_arg_spe.yaml", "r") as f:
             rawd_spe = yaml.safe_load(f)
-        nd_spe = NDict(rawd_spe)
+        nd_spe = NDict(rawd_spe, delimiter=delimiter)
 
-        config = NConfig(self.rawd)
+        config = NConfig(self.rawd, delimiter=delimiter)
         assert config == self.nd
         assert config != nd_spe
 
-        config = NConfig(nd_spe)
+        config = NConfig(nd_spe, delimiter=delimiter)
         assert config._arg_specification
         assert config._d is not self.rawd
 
-    def test_parse(self):
+    def test_parse(self, delimiter=";"):
         def _get_test_value(v):
             def _get(v):
                 if isinstance(v, bool):
@@ -296,14 +332,14 @@ class testNConfig:
 
         with open("test/config_arg_spe.yaml", "r") as f:
             rawd_spe = yaml.safe_load(f)
-        nd_spe = NDict(rawd_spe)
-        config = NConfig(nd_spe)
+        nd_spe = NDict(rawd_spe, delimiter=delimiter)
+        config = NConfig(nd_spe, delimiter=delimiter)
         for path, v in config.flatten_dict.items():
-            config = NConfig(nd_spe)
+            config = NConfig(nd_spe, delimiter=delimiter)
             parser = argparse.ArgumentParser()
             if config._arg_specification.get(path, None) == config._ignore_key:
                 parser = config.add_to_argparse(parser)
-                flag = f"--{path.replace(';', '__')}"
+                flag = f"--{path.replace(delimiter, '__')}"
                 _args = [flag, "1"]
                 args, extra_args = parser.parse_known_args(_args)
                 assert extra_args == _args
@@ -314,8 +350,8 @@ class testNConfig:
             ):
                 flag = config._arg_specification[path]["flag"]
             else:
-                flag = f"--{path.replace(';', '__')}"
-            if path == "data;dataset":
+                flag = f"--{path.replace(delimiter, '__')}"
+            if path == f"data{delimiter}dataset":
                 args, extra_args = parser.parse_known_args([flag, "imagenet"])
             elif isinstance(v, list):
                 args, extra_args = parser.parse_known_args(
@@ -328,7 +364,7 @@ class testNConfig:
             parser = config.add_to_argparse(parser)
             extra_args = config.parse_update(parser, extra_args)
             assert len(extra_args) == 0
-            if path == "data;dataset":
+            if path == f"data{delimiter}dataset":
                 assert config[path] == "imagenet"
             else:
                 if isinstance(config[path], bool):
@@ -344,7 +380,7 @@ class testNConfig:
                 else:
                     assert config[_path] != _v
 
-    def test_update(self):
+    def test_update(self, delimiter=";"):
         config = deepcopy(self.config)
 
         fd = {path: 1 for path in self.config.flatten_dict.keys()}
@@ -363,7 +399,7 @@ class testNConfig:
             assert v == 1
 
         config = deepcopy(self.config)
-        fd = {"not_exist;not_exist;not_exist": "not_exist"}
+        fd = {f"not_exist{delimiter}not_exist{delimiter}not_exist": "not_exist"}
         try:
             config.update(fd)
             raise RuntimeError
@@ -371,19 +407,21 @@ class testNConfig:
             pass
         config.update(fd, ignore_missing_path=True)
         assert "not_exist" in config
-        assert "not_exist;not_exist" in config
-        assert "not_exist;not_exist;not_exist" in config
-        assert config["not_exist;not_exist;not_exist"] == "not_exist"
+        assert f"not_exist{delimiter}not_exist" in config
+        assert f"not_exist{delimiter}not_exist{delimiter}not_exist" in config
+        assert (
+            config[f"not_exist{delimiter}not_exist{delimiter}not_exist"] == "not_exist"
+        )
 
         assert config != self.config
 
         try:
-            config.update({"task;task": {"1": 1}})
+            config.update({f"task{delimiter}task": {"1": 1}})
             raise RuntimeError
         except Exception:
             pass
 
-    def test_setitem(self):
+    def test_setitem(self, delimiter=";"):
         config = deepcopy(self.config)
         for path in config.flatten_dict.keys():
             config[path] = 1
@@ -394,29 +432,52 @@ class testNConfig:
             assert v == 1
 
         config = deepcopy(self.config)
-        config["not_exist;not_exist;not_exist;not_exist"] = "not_exist"
+        config[
+            f"not_exist{delimiter}not_exist{delimiter}not_exist{delimiter}not_exist"
+        ] = "not_exist"
         assert "not_exist" in config
-        assert "not_exist;not_exist" in config
-        assert "not_exist;not_exist;not_exist" in config
-        assert "not_exist;not_exist;not_exist;not_exist" in config
-        assert config["not_exist;not_exist;not_exist;not_exist"] == "not_exist"
+        assert f"not_exist{delimiter}not_exist" in config
+        assert f"not_exist{delimiter}not_exist{delimiter}not_exist" in config
+        assert (
+            f"not_exist{delimiter}not_exist{delimiter}not_exist{delimiter}not_exist"
+            in config
+        )
+        assert (
+            config[
+                f"not_exist{delimiter}not_exist{delimiter}not_exist{delimiter}not_exist"
+            ]
+            == "not_exist"
+        )
 
         assert config != self.config
 
         try:
-            config["task;task"] = {1: 1}
+            config[f"task{delimiter}task"] = {1: 1}
             raise ValueError
         except Exception:
             pass
 
-    def test_save(self):
+    def test_save(self, delimiter=";"):
         self.config.save("tmp.yaml")
         with open("tmp.yaml", "r") as f:
             d = yaml.safe_load(f)
-        config = NConfig(d)
+        config = NConfig(d, delimiter=delimiter)
         assert config == self.config
         assert config._arg_specification == self.config._arg_specification
         os.system("rm -rf tmp.yaml")
+
+    def test_delimiter(self):
+        delimiter = "."
+        self.nd = NDict(self.rawd, delimiter=delimiter)
+        self.test_init(delimiter=delimiter)
+        self.test_parse(delimiter=delimiter)
+        with open("test/config_arg_spe.yaml", "r") as f:
+            rawd_spe = yaml.safe_load(f)
+        nd_spe = NDict(rawd_spe, delimiter=delimiter)
+        self.config = NConfig(nd_spe, delimiter=delimiter)
+        self.test_update(delimiter=delimiter)
+        self.test_setitem(delimiter=delimiter)
+        self.test_save(delimiter=delimiter)
 
 
 testNDict()

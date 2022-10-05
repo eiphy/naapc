@@ -41,14 +41,14 @@ class NConfig(NDict):
     # List is also allowed.
     allowable_types = [int, str, float, bool, type(None)]
 
-    def __init__(self, config: NestedOrDict) -> None:
+    def __init__(self, config: NestedOrDict, delimiter: str = ";") -> None:
         config = deepcopy(config)
         if self._arg_key in config:
             self._arg_specification = config[self._arg_key]
             del config[self._arg_key]
         else:
             self._arg_specification = {}
-        super(NConfig, self).__init__(config)
+        super(NConfig, self).__init__(config, delimiter=delimiter)
         self._check_types()
 
     def _get_custom_args(self) -> list[CustomArgs]:
@@ -72,7 +72,7 @@ class NConfig(NDict):
                 isbool = False
                 choices = None
             carg = {
-                "flag": f"--{path.replace(';', '__')}",
+                "flag": f"--{path.replace(self.delimiter, '__')}",
                 "isbool": isbool,
                 "atype": atype,
                 "path": path,

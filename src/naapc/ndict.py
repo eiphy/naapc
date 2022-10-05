@@ -6,7 +6,7 @@ from typing import Any, Union
 
 
 class NDict:
-    def __init__(self, dictionary: Union["NDict", dict]) -> None:
+    def __init__(self, dictionary: Union["NDict", dict], delimiter: str = ";") -> None:
         dictionary = deepcopy(dictionary)
         if isinstance(dictionary, NDict):
             self._d = dictionary.raw_dict
@@ -14,11 +14,19 @@ class NDict:
             self._d = dictionary
         else:
             raise TypeError(f"Unexpected type {type(dictionary)}.")
+
+        assert isinstance(
+            delimiter, str
+        ), f"delimiter must be str, but recieved {type(delimiter)}"
+        self.delimiter = delimiter
         self._update_flatten()
 
     @classmethod
-    def from_flatten_dict(cls, flatten_dict: dict) -> "NDict":
-        nd = cls({})
+    def from_flatten_dict(cls, flatten_dict: dict, delimiter=";") -> "NDict":
+        """Generate nested from flattened dictionary.
+        Note that the delimiter must be the same!
+        """
+        nd = cls({}, delimiter=delimiter)
         nd.update(flatten_dict)
         return nd
 
@@ -29,7 +37,7 @@ class NDict:
 
         def _flatten(pks, k, v, flatten, paths):
             ks = pks + [k]
-            paths.append(";".join(ks))
+            paths.append(self.delimiter.join(ks))
             if isinstance(v, dict):
                 for nk, nv in v.items():
                     _flatten(ks, nk, nv, flatten, paths)
@@ -83,7 +91,7 @@ class NDict:
     ### setters & updators ###
     def update(self, d, ignore_missing_path=False):
         if isinstance(d, dict):
-            d = NDict(d)._flatten_dict
+            d = NDict(d, delimiter=self.delimiter)._flatten_dict
         elif isinstance(d, NDict):
             d = d._flatten_dict
         else:
@@ -113,29 +121,29 @@ class NDict:
 
     def __delitem__(self, path: str) -> None:
         if path in self._paths:
-            if ";" not in path:
+            if self.delimiter not in path:
                 del self._d[path]
             else:
-                path = path.split(";")
+                path = path.split(self.delimiter)
                 del reduce(getitem, path[:-1], self._d)[path[-1]]
             self._update_flatten()
 
     def __getitem__(self, path: str) -> Any:
         if path not in self._paths:
             raise KeyError(path)
-        if ";" not in path:
+        if self.delimiter not in path:
             return self._d[path]
-        path = path.split(";")
+        path = path.split(self.delimiter)
         return reduce(getitem, path, self._d)
 
     def __len__(self) -> int:
         return len(self._d)
 
     def __setitem__(self, path: str, value) -> None:
-        if ";" not in path:
+        if self.delimiter not in path:
             self._d[path] = value
         else:
-            path = path.split(";")
+            path = path.split(self.delimiter)
             v = self._d
             for node in path[:-1]:
                 if node not in v:

@@ -1,7 +1,17 @@
 # Nested Automated Argument Parsing Configuration (NAAPC)
-NAAPC contains two classes: NConfig and NDict.
+[NAAPC](https://pypi.org/project/naapc/) contains two classes: NConfig and NDict.
 NDict provides method to easily manipulate nested dictionaries.
 NConfig is a subclass of NDict and can **automatically modify configurations according to CLI arguments**.
+
+## Installation
+```bash
+pip install naapc
+```
+
+Or from source code:
+```bash
+pip install .
+```
 
 ## Typical Usage.
 Assume a configuration file test.yaml:
@@ -70,7 +80,7 @@ from naapc import NDict
 
 with open("test.yaml", "r") as f:
   raw = yaml.safe_load(f)
-nd = NDict(raw)
+nd = NDict(raw, delimiter=";")
 
 nd1 = NDict.from_flatten_dict(nd.flatten_dict) # nd1 == nd
 "task;path" in nd                      # "task" in raw and "path" in raw["task"]
