@@ -2,11 +2,15 @@ import json
 from copy import deepcopy
 from functools import reduce
 from operator import getitem
-from typing import Any, Union
+from typing import Any, Optional, Union
 
 
 class NDict:
-    def __init__(self, dictionary: Union["NDict", dict], delimiter: str = ";") -> None:
+    """You are not supposed to modify the data outside this class!"""
+    def __init__(
+        self, dictionary: Optional[Union["NDict", dict]] = None, delimiter: str = ";"
+    ) -> None:
+        dictionary = dictionary or {}
         dictionary = deepcopy(dictionary)
         if isinstance(dictionary, NDict):
             self._d = dictionary.raw_dict
@@ -15,20 +19,26 @@ class NDict:
         else:
             raise TypeError(f"Unexpected type {type(dictionary)}.")
 
-        assert isinstance(
-            delimiter, str
-        ), f"delimiter must be str, but recieved {type(delimiter)}"
+        assert isinstance(delimiter, str), f"delimiter must be str, but recieved {type(delimiter)}"
         self.delimiter = delimiter
         self._update_flatten()
 
     @classmethod
     def from_flatten_dict(cls, flatten_dict: dict, delimiter=";") -> "NDict":
         """Generate nested from flattened dictionary.
-        Note that the delimiter must be the same!
+        The delimiter must be the same!
         """
         nd = cls({}, delimiter=delimiter)
         nd.update(flatten_dict)
         return nd
+
+    @classmethod
+    def from_list_of_dict(cls, ls: list, delimiter=";") -> "NDict":
+        """Generate nested from a list of dictionaries."""
+        res = cls()
+        for d in ls:
+            res.update(d)
+        return res
 
     ### internal manipulation ###
     def _update_flatten(self) -> None:
@@ -74,15 +84,21 @@ class NDict:
 
     @property
     def raw_dict(self):
-        return self._d
+        return deepcopy(self._d)
 
     @property
     def flatten_dict(self):
-        return self._flatten_dict
+        return deepcopy(self._flatten_dict)
+
+    @property
+    def flatten_dict_split(self):
+        return deepcopy(
+            [NDict.from_flatten_dict({p: v}).raw_dict for p, v in self.flatten_dict.items()]
+        )
 
     @property
     def paths(self):
-        return self._paths
+        return deepcopy(self._paths)
 
     @property
     def size(self):

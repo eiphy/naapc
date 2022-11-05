@@ -59,8 +59,10 @@ class testNDict:
     def test_init(self, delimiter=";"):
         nd1 = NDict(self.nd, delimiter=delimiter)
         assert nd1 == self.nd
+        assert self.nd.raw_dict is not nd1.raw_dict
+        assert self.nd is not nd1
 
-        nd1 = NDict(deepcopy(self.nd._d), delimiter=delimiter)
+        nd1 = NDict(deepcopy(self.nd.raw_dict), delimiter=delimiter)
         assert nd1 is not self.nd
         assert nd1 == self.nd
         del nd1[f"task{delimiter}task"]
@@ -76,6 +78,10 @@ class testNDict:
         nd1 = NDict.from_flatten_dict(self.nd.flatten_dict, delimiter=delimiter)
         assert nd1 is not self.nd
         assert nd1._d is not self.nd._d
+        assert nd1 == self.nd
+
+    def test_from_list(self, delimiter=";"):
+        nd1 = NDict.from_list_of_dict(self.nd.flatten_dict_split, delimiter=delimiter)
         assert nd1 == self.nd
 
     def test_eq(self, delimiter=";"):
@@ -101,9 +107,7 @@ class testNDict:
         all_paths = []
         for path in self.nd.flatten_dict.keys():
             nodes = path.split(delimiter)
-            all_paths.extend(
-                delimiter.join(nodes[:i]) for i in range(1, len(nodes) + 1)
-            )
+            all_paths.extend(delimiter.join(nodes[:i]) for i in range(1, len(nodes) + 1))
         assert set(self.nd.paths) == set(all_paths)
 
     def test_contains(self, delimiter=";"):
@@ -132,9 +136,7 @@ class testNDict:
 
     def test_flatten(self, delimiter=";"):
         for path, v in self.nd.flatten_dict.items():
-            assert (
-                self.nd[path] == v
-            ), f"Wrong at {path}. nd: {self.nd[path]}, flatten: {v}"
+            assert self.nd[path] == v, f"Wrong at {path}. nd: {self.nd[path]}, flatten: {v}"
 
         def _check(pks, k, v, flatten):
             path = delimiter.join(pks + [k])
@@ -142,9 +144,7 @@ class testNDict:
                 for nk, nv in v.items():
                     _check(pks + [k], nk, nv, flatten)
             else:
-                assert (
-                    flatten[path] == v
-                ), f"Wrong at {path}. raw: {v}, flatten: {flatten[path]}"
+                assert flatten[path] == v, f"Wrong at {path}. raw: {v}, flatten: {flatten[path]}"
 
         for k, v in self.rawd.items():
             _check([], k, v, self.nd.flatten_dict)
@@ -160,16 +160,11 @@ class testNDict:
             assert v == 1
 
         nd = deepcopy(self.nd)
-        nd[
-            f"not_exist{delimiter}not_exist{delimiter}not_exist{delimiter}not_exist"
-        ] = "not_exist"
+        nd[f"not_exist{delimiter}not_exist{delimiter}not_exist{delimiter}not_exist"] = "not_exist"
         assert "not_exist" in nd
         assert f"not_exist{delimiter}not_exist" in nd
         assert f"not_exist{delimiter}not_exist{delimiter}not_exist" in nd
-        assert (
-            f"not_exist{delimiter}not_exist{delimiter}not_exist{delimiter}not_exist"
-            in nd
-        )
+        assert f"not_exist{delimiter}not_exist{delimiter}not_exist{delimiter}not_exist" in nd
         assert (
             nd[f"not_exist{delimiter}not_exist{delimiter}not_exist{delimiter}not_exist"]
             == "not_exist"
@@ -344,10 +339,7 @@ class testNConfig:
                 args, extra_args = parser.parse_known_args(_args)
                 assert extra_args == _args
                 continue
-            if (
-                path in config._arg_specification
-                and "flag" in config._arg_specification[path]
-            ):
+            if path in config._arg_specification and "flag" in config._arg_specification[path]:
                 flag = config._arg_specification[path]["flag"]
             else:
                 flag = f"--{path.replace(delimiter, '__')}"
@@ -358,9 +350,7 @@ class testNConfig:
                     [flag, *[str(x) for x in _get_test_value(v)]]
                 )
             else:
-                args, extra_args = parser.parse_known_args(
-                    [flag, str(_get_test_value(v))]
-                )
+                args, extra_args = parser.parse_known_args([flag, str(_get_test_value(v))])
             parser = config.add_to_argparse(parser)
             extra_args = config.parse_update(parser, extra_args)
             assert len(extra_args) == 0
@@ -409,9 +399,7 @@ class testNConfig:
         assert "not_exist" in config
         assert f"not_exist{delimiter}not_exist" in config
         assert f"not_exist{delimiter}not_exist{delimiter}not_exist" in config
-        assert (
-            config[f"not_exist{delimiter}not_exist{delimiter}not_exist"] == "not_exist"
-        )
+        assert config[f"not_exist{delimiter}not_exist{delimiter}not_exist"] == "not_exist"
 
         assert config != self.config
 
@@ -438,14 +426,9 @@ class testNConfig:
         assert "not_exist" in config
         assert f"not_exist{delimiter}not_exist" in config
         assert f"not_exist{delimiter}not_exist{delimiter}not_exist" in config
+        assert f"not_exist{delimiter}not_exist{delimiter}not_exist{delimiter}not_exist" in config
         assert (
-            f"not_exist{delimiter}not_exist{delimiter}not_exist{delimiter}not_exist"
-            in config
-        )
-        assert (
-            config[
-                f"not_exist{delimiter}not_exist{delimiter}not_exist{delimiter}not_exist"
-            ]
+            config[f"not_exist{delimiter}not_exist{delimiter}not_exist{delimiter}not_exist"]
             == "not_exist"
         )
 

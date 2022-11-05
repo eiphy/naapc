@@ -32,7 +32,9 @@ class CustomArgs:
 
 
 class NConfig(NDict):
-    """Nested configuration based on NDict class."""
+    """Nested configuration based on NDict class.
+    You are not supposed to modify the data outside this class!
+    """
 
     _arg_key = "_ARGUMENT_SPECIFICATION"
     _ignore_key = "_IGNORE_IN_CLI"
@@ -42,6 +44,7 @@ class NConfig(NDict):
     allowable_types = [int, str, float, bool, type(None)]
 
     def __init__(self, config: NestedOrDict, delimiter: str = ";") -> None:
+        # Configuration is supposed to be read-only. Therefore should not be modified in outside.
         config = deepcopy(config)
         if self._arg_key in config:
             self._arg_specification = config[self._arg_key]
@@ -50,6 +53,24 @@ class NConfig(NDict):
             self._arg_specification = {}
         super(NConfig, self).__init__(config, delimiter=delimiter)
         self._check_types()
+
+    @property
+    def raw_dict(self):
+        return deepcopy(self._d)
+
+    @property
+    def flatten_dict(self):
+        return deepcopy(self._flatten_dict)
+
+    @property
+    def flatten_dict_split(self):
+        return deepcopy(
+            [NDict.from_flatten_dict({p: v}).raw_dict for p, v in self.flatten_dict.items()]
+        )
+
+    @property
+    def paths(self):
+        return deepcopy(self._paths)
 
     def _get_custom_args(self) -> list[CustomArgs]:
         """Generate customized arguments."""
@@ -87,9 +108,7 @@ class NConfig(NDict):
 
         return custom_args
 
-    def add_to_argparse(
-        self, parser: argparse.ArgumentParser
-    ) -> argparse.ArgumentParser:
+    def add_to_argparse(self, parser: argparse.ArgumentParser) -> argparse.ArgumentParser:
         """Add arguments to parser.
         For a path "task;task", the argument is specified as "--task__task".
         The type is inferred from the configuration file.

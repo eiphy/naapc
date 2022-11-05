@@ -74,19 +74,32 @@ train:
   loss_args:
     lr: 0.1
 ```
+and a sample list configuration test_list.yaml file:
+```yaml
+l:
+- d:
+    task:
+      task: classification
+- d:
+    train:
+      loss_args:
+        lr: 0.1
+```
 
 ```python
 from naapc import NDict
 
 with open("test.yaml", "r") as f:
   raw = yaml.safe_load(f)
-nd = NDict(raw, delimiter=";")
-
+nd = NDict(raw["d"], delimiter=";")
 nd1 = NDict.from_flatten_dict(nd.flatten_dict) # nd1 == nd
+nd2 = NDict.from_list_of_dict(raw["l"]) # nd2 == nd1 == nd
+
 "task;path" in nd                      # "task" in raw and "path" in raw["task"]
 del nd["task;path"]                    # del raw["task]["path]
 nd["task;path"] = "cwd"                # raw["task"]["path"] = Path(".").absolute()
 nd.flatten_dict                        # {"task;task": "classification", "train;loss_args;lr": 0.1}
+nd.flatten_dict_split                  # raw["l"]
 nd.paths                               # ["task", "task;task", "train", "train;loss_args", "train;loss_args;lr"]
 nd.get("task;seed", 1)                 # raw["task"].get("seed", 1)
 nd.raw_dict                            # raw
