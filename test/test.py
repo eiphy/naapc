@@ -9,17 +9,17 @@ import yaml
 
 sys.path.append(str(Path(__file__).parent.parent.absolute()))
 
-from naapc import NConfig, NDict
+from naapc import nconfig, ndict
 
 
 class testNDict:
     def __init__(self, delimiter=";"):
-        self.nd = NDict({"this": "is test"})
+        self.nd = ndict({"this": "is test"})
         print("Pass copy test.")
 
         with open("test/config.yaml", "r") as f:
             self.rawd = yaml.safe_load(f)
-        self.nd = NDict(self.rawd)
+        self.nd = ndict(self.rawd)
         self.test_init()
         print("Pass init test.")
 
@@ -57,12 +57,12 @@ class testNDict:
         print("Pass delimiter test.")
 
     def test_init(self, delimiter=";"):
-        nd1 = NDict(self.nd, delimiter=delimiter)
+        nd1 = ndict(self.nd, delimiter=delimiter)
         assert nd1 == self.nd
         assert self.nd.raw_dict is not nd1.raw_dict
         assert self.nd is not nd1
 
-        nd1 = NDict(deepcopy(self.nd.raw_dict), delimiter=delimiter)
+        nd1 = ndict(deepcopy(self.nd.raw_dict), delimiter=delimiter)
         assert nd1 is not self.nd
         assert nd1 == self.nd
         del nd1[f"task{delimiter}task"]
@@ -70,18 +70,18 @@ class testNDict:
         assert nd1 != self.nd
 
     def test_from_flatten_dict(self, delimiter=";"):
-        nd1 = NDict.from_flatten_dict(self.nd, delimiter=delimiter)
+        nd1 = ndict.from_flatten_dict(self.nd, delimiter=delimiter)
         assert nd1 is not self.nd
         assert nd1._d is not self.nd._d
         assert nd1 == self.nd
 
-        nd1 = NDict.from_flatten_dict(self.nd.flatten_dict, delimiter=delimiter)
+        nd1 = ndict.from_flatten_dict(self.nd.flatten_dict, delimiter=delimiter)
         assert nd1 is not self.nd
         assert nd1._d is not self.nd._d
         assert nd1 == self.nd
 
     def test_from_list(self, delimiter=";"):
-        nd1 = NDict.from_list_of_dict(self.nd.flatten_dict_split, delimiter=delimiter)
+        nd1 = ndict.from_list_of_dict(self.nd.flatten_dict_split, delimiter=delimiter)
         assert nd1 == self.nd
 
     def test_eq(self, delimiter=";"):
@@ -94,10 +94,10 @@ class testNDict:
         assert nd != self.nd
 
         d = deepcopy(self.nd.raw_dict)
-        nd = NDict(d, delimiter=delimiter)
+        nd = ndict(d, delimiter=delimiter)
         assert nd == self.nd
         del d["task"]
-        nd = NDict(d, delimiter=delimiter)
+        nd = ndict(d, delimiter=delimiter)
         assert nd != self.nd
 
     def test_paths(self, delimiter=";"):
@@ -243,7 +243,7 @@ class testNDict:
 
     def test_delimiter(self):
         delimiter = "."
-        self.nd = NDict(self.rawd, delimiter=delimiter)
+        self.nd = ndict(self.rawd, delimiter=delimiter)
         self.test_init(delimiter=delimiter)
         self.test_from_flatten_dict(delimiter=delimiter)
         self.test_paths(delimiter=delimiter)
@@ -261,7 +261,7 @@ class testNConfig:
     def __init__(self, delimiter=";"):
         with open("test/config.yaml", "r") as f:
             self.rawd = yaml.safe_load(f)
-        self.nd = NDict(self.rawd, delimiter=delimiter)
+        self.nd = ndict(self.rawd, delimiter=delimiter)
 
         self.test_init()
         print("Pass init test.")
@@ -271,9 +271,9 @@ class testNConfig:
 
         with open("test/config_arg_spe.yaml", "r") as f:
             rawd_spe = yaml.safe_load(f)
-        nd_spe = NDict(rawd_spe, delimiter=delimiter)
+        nd_spe = ndict(rawd_spe, delimiter=delimiter)
 
-        self.config = NConfig(nd_spe, delimiter=delimiter)
+        self.config = nconfig(nd_spe, delimiter=delimiter)
 
         self.test_update()
         print("Pass update test.")
@@ -290,13 +290,13 @@ class testNConfig:
     def test_init(self, delimiter=";"):
         with open("test/config_arg_spe.yaml", "r") as f:
             rawd_spe = yaml.safe_load(f)
-        nd_spe = NDict(rawd_spe, delimiter=delimiter)
+        nd_spe = ndict(rawd_spe, delimiter=delimiter)
 
-        config = NConfig(self.rawd, delimiter=delimiter)
+        config = nconfig(self.rawd, delimiter=delimiter)
         assert config == self.nd
         assert config != nd_spe
 
-        config = NConfig(nd_spe, delimiter=delimiter)
+        config = nconfig(nd_spe, delimiter=delimiter)
         assert config._arg_specification
         assert config._d is not self.rawd
 
@@ -327,10 +327,10 @@ class testNConfig:
 
         with open("test/config_arg_spe.yaml", "r") as f:
             rawd_spe = yaml.safe_load(f)
-        nd_spe = NDict(rawd_spe, delimiter=delimiter)
-        config = NConfig(nd_spe, delimiter=delimiter)
+        nd_spe = ndict(rawd_spe, delimiter=delimiter)
+        config = nconfig(nd_spe, delimiter=delimiter)
         for path, v in config.flatten_dict.items():
-            config = NConfig(nd_spe, delimiter=delimiter)
+            config = nconfig(nd_spe, delimiter=delimiter)
             parser = argparse.ArgumentParser()
             if config._arg_specification.get(path, None) == config._ignore_key:
                 parser = config.add_to_argparse(parser)
@@ -444,20 +444,20 @@ class testNConfig:
         self.config.save("tmp.yaml")
         with open("tmp.yaml", "r") as f:
             d = yaml.safe_load(f)
-        config = NConfig(d, delimiter=delimiter)
+        config = nconfig(d, delimiter=delimiter)
         assert config == self.config
         assert config._arg_specification == self.config._arg_specification
         os.system("rm -rf tmp.yaml")
 
     def test_delimiter(self):
         delimiter = "."
-        self.nd = NDict(self.rawd, delimiter=delimiter)
+        self.nd = ndict(self.rawd, delimiter=delimiter)
         self.test_init(delimiter=delimiter)
         self.test_parse(delimiter=delimiter)
         with open("test/config_arg_spe.yaml", "r") as f:
             rawd_spe = yaml.safe_load(f)
-        nd_spe = NDict(rawd_spe, delimiter=delimiter)
-        self.config = NConfig(nd_spe, delimiter=delimiter)
+        nd_spe = ndict(rawd_spe, delimiter=delimiter)
+        self.config = nconfig(nd_spe, delimiter=delimiter)
         self.test_update(delimiter=delimiter)
         self.test_setitem(delimiter=delimiter)
         self.test_save(delimiter=delimiter)

@@ -1,6 +1,6 @@
 from typing import Union
 
-from .nconfig import CustomArgs, NConfig
-from .ndict import NDict, NestedOrDict
+from .nconfig import CustomArgs, nconfig
+from .ndict import ndict, NestedOrDict
 
-__version__ = "1.5.0"
+__version__ = "1.6.0"

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import json
 from copy import deepcopy
 from functools import reduce
@@ -5,14 +7,17 @@ from operator import getitem
 from typing import Any, Optional, Union
 
 
-class NDict:
-    """You are not supposed to modify the data outside this class!"""
+class ndict:
+    """Due to the internal mechanism, modifications of the raw_dict will not be applied on the
+    object."""
+
+    _missing_methods = ["ignore", "false", "error"]
+
     def __init__(
-        self, dictionary: Optional[Union["NDict", dict]] = None, delimiter: str = ";"
+        self, dictionary: Optional[Union[ndict, dict]] = None, delimiter: str = ";"
     ) -> None:
         dictionary = dictionary or {}
-        dictionary = deepcopy(dictionary)
-        if isinstance(dictionary, NDict):
+        if isinstance(dictionary, ndict):
             self._d = dictionary.raw_dict
         elif isinstance(dictionary, dict):
             self._d = dictionary
@@ -24,7 +29,7 @@ class NDict:
         self._update_flatten()
 
     @classmethod
-    def from_flatten_dict(cls, flatten_dict: dict, delimiter=";") -> "NDict":
+    def from_flatten_dict(cls, flatten_dict: dict, delimiter=";") -> ndict:
         """Generate nested from flattened dictionary.
         The delimiter must be the same!
         """
@@ -33,12 +38,46 @@ class NDict:
         return nd
 
     @classmethod
-    def from_list_of_dict(cls, ls: list, delimiter=";") -> "NDict":
+    def from_list_of_dict(cls, ls: list, delimiter=";") -> ndict:
         """Generate nested from a list of dictionaries."""
         res = cls()
         for d in ls:
             res.update(d)
         return res
+
+    def is_matched(self, query: dict, missing_method: str = "ignore") -> bool:
+        """Test if the dictionary is the queried one.
+
+        Syntax:
+            1. Normal path-value pair: {path: value}.
+            2. Query expression: {path: !QUERY [python expression returns boolean results]}. The
+                expression can use d: the dictionary and path: the query path.
+
+        Args:
+            query (dict): query dictionary.
+            missing_method (str): actions when the path is missing from the dictionary. Support:
+            ['ignore', 'false', 'error'].
+        Returns:
+            (bool): if the dictionary is the queried one.
+        """
+        assert (
+            missing_method in self._missing_methods
+        ), f"Wrong missing method: {missing_method} / {self._missing_methods}."
+        d = self
+        for path, v in query.items():
+            if path not in self:
+                if missing_method == "ignore":
+                    continue
+                elif missing_method == "false":
+                    return False
+                elif missing_method == "error":
+                    raise KeyError(f"Wrong path: {path}.")
+
+            if isinstance(v, str) and v.startswith("!QUERY") and not eval(v[6:].strip()):
+                return False
+            if self[path] != v:
+                return False
+        return True
 
     ### internal manipulation ###
     def _update_flatten(self) -> None:
@@ -68,7 +107,7 @@ class NDict:
             return default
 
     def compare_dict(self, other):
-        assert isinstance(other, NDict)
+        assert isinstance(other, ndict)
         output = {}
         for path, v in self._flatten_dict.items():
             other_v = other.get(path, None)
@@ -93,7 +132,7 @@ class NDict:
     @property
     def flatten_dict_split(self):
         return deepcopy(
-            [NDict.from_flatten_dict({p: v}).raw_dict for p, v in self.flatten_dict.items()]
+            [ndict.from_flatten_dict({p: v}).raw_dict for p, v in self.flatten_dict.items()]
         )
 
     @property
@@ -107,8 +146,8 @@ class NDict:
     ### setters & updators ###
     def update(self, d, ignore_missing_path=False):
         if isinstance(d, dict):
-            d = NDict(d, delimiter=self.delimiter)._flatten_dict
-        elif isinstance(d, NDict):
+            d = ndict(d, delimiter=self.delimiter)._flatten_dict
+        elif isinstance(d, ndict):
             d = d._flatten_dict
         else:
             raise TypeError(f"Unexpected type {type(d)}")
@@ -172,8 +211,8 @@ class NDict:
         return json.dumps(self._d, sort_keys=False, indent=2)
 
     def __eq__(self, other) -> bool:
-        assert isinstance(other, NDict), f"Unexpected type {type(other)}"
+        assert isinstance(other, ndict), f"Unexpected type {type(other)}"
         return self._flatten_dict == other._flatten_dict
 
 
-NestedOrDict = Union[NDict, dict]
+NestedOrDict = Union[ndict, dict]

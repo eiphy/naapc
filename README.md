@@ -25,7 +25,7 @@ train:
 ```
 The typical usage is as follows:
 ```python
-from naapc import NConfig
+from naapc import nconfig
 from argparse import parser
 
 parser.add_argument("-c", type=str, dest="config")
@@ -33,7 +33,7 @@ args, extra_args = parser.parse_known_args(["-c", "test.yaml", "--task;task", "r
 
 with open(args.config, "r") as f:
   raw = yaml.safe_load(f)
-config = NConfig(raw)
+config = nconfig(raw)
 extra_args = config.parse_update(parser, extra_args)
 ```
 The resulting configurations:
@@ -65,7 +65,7 @@ _ARGUMENT_SPECIFICATION:
     flag: lr
 ```
 
-## NDict Usages
+## ndict Usages
 for a sample configuration test.yaml file:
 ```yaml
 task:
@@ -87,13 +87,13 @@ l:
 ```
 
 ```python
-from naapc import NDict
+from naapc import ndict
 
 with open("test.yaml", "r") as f:
   raw = yaml.safe_load(f)
-nd = NDict(raw["d"], delimiter=";")
-nd1 = NDict.from_flatten_dict(nd.flatten_dict) # nd1 == nd
-nd2 = NDict.from_list_of_dict(raw["l"]) # nd2 == nd1 == nd
+nd = ndict(raw["d"], delimiter=";")
+nd1 = ndict.from_flatten_dict(nd.flatten_dict) # nd1 == nd
+nd2 = ndict.from_list_of_dict(raw["l"]) # nd2 == nd1 == nd
 
 "task;path" in nd                      # "task" in raw and "path" in raw["task"]
 del nd["task;path"]                    # del raw["task]["path]
@@ -115,11 +115,17 @@ nd1["task;path"] = "xcwd"
 nd1["task;extra"] = "ecwd"
 nd["train;epochs"] = 100
 nd.compare_dict(nd1)                   # {"task;path": ("cwd", "xcwd"), "task;extra": (None, ecwd), "train;epochs": (100, None)}
+nd.is_matched(
+        {
+            "task;path": "ecwd", 
+            "train;epochs": "!QUERY d[path] == d['train;minimum_epochs']"
+        }
+    )                                  # Test if this dictionary is what you want.
 ```
 
-## NConfig Usage
-NConfig only supports int, str, float, bool, and list of these types.
-The NConfig automatically checks data type when modifications are applied.
+## nconfig Usage
+nconfig only supports int, str, float, bool, and list of these types.
+The nconfig automatically checks data type when modifications are applied.
 Note that argument specification ("_ARGUMENT_SPECIFICATION") does not count as part of the configurations but will be saved when use save() method.
 The path specified as "_IGNORE_IN_CLI" will not be added to the parser.
 
@@ -150,5 +156,5 @@ Other functionalities are the same to NDict.
 ## Typing
 Add a type
 ```python
-NestedOrDict = Union[NDict, dict]
+NestedOrDict = Union[ndict, dict]
 ```

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import argparse
 from copy import deepcopy
 from pathlib import Path
@@ -5,7 +7,7 @@ from typing import Union
 
 import yaml
 
-from .ndict import NDict, NestedOrDict
+from .ndict import ndict, NestedOrDict
 
 
 class CustomArgs:
@@ -31,7 +33,7 @@ class CustomArgs:
         return f"{self.flag} {self.path}"
 
 
-class NConfig(NDict):
+class nconfig(ndict):
     """Nested configuration based on NDict class.
     You are not supposed to modify the data outside this class!
     """
@@ -51,7 +53,7 @@ class NConfig(NDict):
             del config[self._arg_key]
         else:
             self._arg_specification = {}
-        super(NConfig, self).__init__(config, delimiter=delimiter)
+        super().__init__(config, delimiter=delimiter)
         self._check_types()
 
     @property
@@ -65,7 +67,7 @@ class NConfig(NDict):
     @property
     def flatten_dict_split(self):
         return deepcopy(
-            [NDict.from_flatten_dict({p: v}).raw_dict for p, v in self.flatten_dict.items()]
+            [ndict.from_flatten_dict({p: v}).raw_dict for p, v in self.flatten_dict.items()]
         )
 
     @property
@@ -143,7 +145,7 @@ class NConfig(NDict):
 
     ### getters ###
     @property
-    def str_configs(self) -> "NConfig":
+    def str_configs(self) -> nconfig:
         """Return NConfig object with every value in string."""
         d = deepcopy(self)
         for path, v in self._flatten_dict.items():
@@ -184,4 +186,4 @@ class NConfig(NDict):
     def __setitem__(self, path: str, value: Union[str, int, float, bool]):
         """Same to NDict but do type checking."""
         self._check_type_v(value)
-        super(NConfig, self).__setitem__(path, value)
+        super(nconfig, self).__setitem__(path, value)
