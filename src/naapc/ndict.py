@@ -45,13 +45,14 @@ class ndict:
             res.update(d)
         return res
 
-    def is_matched(self, query: dict, missing_method: str = "ignore") -> bool:
+    def is_matched(self, query: dict, missing_method: str = "ignore", **kwargs) -> bool:
         """Test if the dictionary is the queried one.
 
         Syntax:
             1. Normal path-value pair: {path: value}.
             2. Query expression: {path: !QUERY [python expression returns boolean results]}. The
-                expression can use d: the dictionary and path: the query path.
+                expression can use d: the dictionary, path: the query path and any other input
+                kwargs.
 
         Args:
             query (dict): query dictionary.
