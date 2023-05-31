@@ -24,7 +24,9 @@ class ndict:
         else:
             raise TypeError(f"Unexpected type {type(dictionary)}.")
 
-        assert isinstance(delimiter, str), f"delimiter must be str, but recieved {type(delimiter)}"
+        assert isinstance(
+            delimiter, str
+        ), f"delimiter must be str, but recieved {type(delimiter)}"
         self.delimiter = delimiter
         self._update_flatten()
 
@@ -74,7 +76,11 @@ class ndict:
                 elif missing_method == "error":
                     raise KeyError(f"Wrong path: {path}.")
 
-            if isinstance(v, str) and v.startswith("!QUERY") and not eval(v[6:].strip()):
+            if (
+                isinstance(v, str)
+                and v.startswith("!QUERY")
+                and not eval(v[6:].strip())
+            ):
                 return False
             if self[path] != v:
                 return False
@@ -133,7 +139,10 @@ class ndict:
     @property
     def flatten_dict_split(self):
         return deepcopy(
-            [ndict.from_flatten_dict({p: v}).raw_dict for p, v in self.flatten_dict.items()]
+            [
+                ndict.from_flatten_dict({p: v}).raw_dict
+                for p, v in self.flatten_dict.items()
+            ]
         )
 
     @property
@@ -145,7 +154,7 @@ class ndict:
         return len(self._flatten_dict)
 
     ### setters & updators ###
-    def update(self, d, ignore_missing_path=False):
+    def update(self, d, ignore_missing_path=False, ignore_none=True):
         if isinstance(d, dict):
             d = ndict(d, delimiter=self.delimiter)._flatten_dict
         elif isinstance(d, ndict):
@@ -154,7 +163,9 @@ class ndict:
             raise TypeError(f"Unexpected type {type(d)}")
 
         for path, v in d.items():
-            if path not in self.paths and ignore_missing_path:
+            if (path not in self.paths and ignore_missing_path) or (
+                ignore_none and v is None
+            ):
                 continue
             self[path] = v
 
@@ -188,9 +199,10 @@ class ndict:
         if path not in self._paths:
             raise KeyError(path)
         if self.delimiter not in path:
-            return self._d[path]
+            v = self._d[path]
         path = path.split(self.delimiter)
-        return reduce(getitem, path, self._d)
+        v = reduce(getitem, path, self._d)
+        return v
 
     def __len__(self) -> int:
         return len(self._d)
@@ -211,9 +223,9 @@ class ndict:
     def __str__(self) -> str:
         return json.dumps(self._d, sort_keys=False, indent=2)
 
-    def __eq__(self, other) -> bool:
-        assert isinstance(other, ndict), f"Unexpected type {type(other)}"
-        return self._flatten_dict == other._flatten_dict
+    def __eq__(self, other: NestedOrDict) -> bool:
+        assert isinstance(other, (ndict, dict)), f"Unexpected type {type(other)}"
+        return self._flatten_dict == ndict(other, self.delimiter)._flatten_dict
 
 
 NestedOrDict = Union[ndict, dict]
