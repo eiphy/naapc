@@ -7,26 +7,58 @@ from operator import getitem
 from typing import Any, Optional, Union
 
 
+def dfs(
+    res: Any, node: Any, path: str, depth: int, action: callable, stop_condition: callable
+) -> Any:
+    """Depth-first traverse.
+
+    Args:
+        res (Any): Current results.
+        node (Any): Current node (value).
+        path (str): Current path (key)
+        depth (int): Current depth (0 at root)
+        action (callable): Action.
+        stop_condition (callable): Whether should stop the traverse process.
+
+    Returns:
+        Any: Results
+    """
+    if stop_condition(res, node, path, depth):
+        return res
+
+    action(res, node, path, depth)
+
+    if isinstance(node, dict):
+        for k, v in node.items():
+            next_path = ";".join([path, k])
+            dfs(res, v, next_path, depth + 1, action, stop_condition)
+    else:
+        return res
+
+
 class ndict:
     """Due to the internal mechanism, modifications of the raw_dict will not be applied on the
     object."""
 
     _missing_methods = ["ignore", "false", "error"]
 
-    def __init__(
-        self, dictionary: Optional[Union[ndict, dict]] = None, delimiter: str = ";"
-    ) -> None:
-        dictionary = dictionary or {}
-        if isinstance(dictionary, ndict):
-            self._d = dictionary.raw_dict
-        elif isinstance(dictionary, dict):
-            self._d = dictionary
-        else:
-            raise TypeError(f"Unexpected type {type(dictionary)}.")
-
+    def __init__(self, d: Optional[Union[ndict, dict]] = None, delimiter: str = ";") -> None:
         assert isinstance(delimiter, str), f"delimiter must be str, but recieved {type(delimiter)}"
-        self.delimiter = delimiter
-        self._update_flatten()
+        self._delimiter = delimiter
+
+        d = d or {}
+        if isinstance(d, ndict):
+            self._d = d.dict
+            self._flatten_dict = d.flatten_dict
+        elif isinstance(d, dict):
+            self._d = d
+            self._flatten_dict = self.flatten(self.dict)
+        else:
+            raise TypeError(f"Unexpected type {type(d)}.")
+
+    @staticmethod
+    def flatten(d: dict) -> dict[str, Any]:
+        ...
 
     @classmethod
     def from_flatten_dict(cls, flatten_dict: dict, delimiter=";") -> ndict:
@@ -44,6 +76,44 @@ class ndict:
         for d in ls:
             res.update(d)
         return res
+
+    @property
+    def dict(self) -> dict:
+        return self._d
+
+    @property
+    def flatten_dict(self) -> dict:
+        return self._flatten_dict
+
+    def traverse(
+        self,
+        res: Any,
+        actions: Union[callable, tuple[callable, dict[str, callable]]],
+        depth: Optional[int] = -1,
+        stop_condition: Optional[Union[list[callable], callable]] = None,
+        alg: callable = dfs,
+    ) -> Any:
+        """Go through nodes in the tree and apply actions / collect data.
+
+        Args:
+            res (Any): Where the final results will be.
+            actions (Union[callable, tuple[callable, dict[str, callable]]]): action applied on all nodes or A tuple of
+                (default action, {path: path actions}). Each callable should accept: res, node, path, depth 4 arguments.
+            depth (Optional[int], optional): Maximum traverse depth. Defaults to -1, which means traverse all depth.
+            stop_condition (Optional[Union[list[callable], callable]], optional): Callable which returns bool to
+                determine whether the tranverse should be stopped. This callable should accept res, node, path, depth 4
+                arguments. It can also be a list of callables. In that case all the callable must return True to stop
+                the traverse process. Defaults to None which means no extra conditions other depth.
+            alg (callable, optional): Algorithm used to traverse the tree. Currently only support dfs. It should accept
+                res, node, path, depth, actions and stop_condition 6 arguments. Defaults to dfs.
+
+        Returns:
+            Any: The results
+        """
+        action = self._generate_action_pipeline(actions)
+        stop_condition = self._generate_stop_condition_pipeline(stop_condition, depth)
+
+        return alg(res, self.dict, "", 0, action, stop_condition)
 
     def is_matched(self, query: dict, missing_method: str = "ignore", **kwargs) -> bool:
         """Test if the dictionary is the queried one.
@@ -223,6 +293,46 @@ class ndict:
     def __eq__(self, other: NestedOrDict) -> bool:
         assert isinstance(other, (ndict, dict)), f"Unexpected type {type(other)}"
         return self._flatten_dict == ndict(other, self.delimiter)._flatten_dict
+
+    def _generate_depth_stop_condition(self, max_depth: int = -1) -> callable:
+        def depth_stop_condition(res: Any, node: Any, path: str, depth) -> bool:
+            return max_depth != -1 and depth > max_depth
+
+        return depth_stop_condition
+
+    def _generate_stop_condition_pipeline(
+        self, conditions: Optional[Union[list[callable], callable]], max_depth: int = -1
+    ) -> callable:
+        conditions = [conditions] if isinstance(conditions, callable) else conditions
+        conditions = [] if conditions is None else conditions
+        conditions.append(self._generate_depth_stop_condition(max_depth))
+
+        def stop_condition_pipeline(res: Any, node: Any, path: str, depth: int) -> bool:
+            for cond in conditions:
+                if cond(res, node, path, depth):
+                    return True
+            return False
+
+        return stop_condition_pipeline
+
+    def _generate_action_pipeline(
+        self, actions: Union[callable, tuple[callable, dict[str, callable]]]
+    ) -> callable:
+        if isinstance(actions, tuple):
+            default_action = actions[0]
+            if len(actions) == 2:
+                specific_actions = actions[1]
+        else:
+            default_action = actions
+            specific_actions = {}
+
+        def action_pipeline(res: Any, node: Any, path: str, depth: int) -> None:
+            if path in specific_actions:
+                specific_actions[path](res, node, path, depth)
+            else:
+                default_action(res, node, path, depth)
+
+        return action_pipeline
 
 
 NestedOrDict = Union[ndict, dict]
