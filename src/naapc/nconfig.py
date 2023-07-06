@@ -7,7 +7,7 @@ from typing import Union
 
 import yaml
 
-from .ndict import ndict, NestedOrDict
+from naapc.ndict import ndict
 
 
 class CustomArgs:
@@ -67,7 +67,10 @@ class nconfig(ndict):
     @property
     def flatten_dict_split(self):
         return deepcopy(
-            [ndict.from_flatten_dict({p: v}).raw_dict for p, v in self.flatten_dict.items()]
+            [
+                ndict.from_flatten_dict({p: v}).raw_dict
+                for p, v in self.flatten_dict.items()
+            ]
         )
 
     @property
@@ -110,7 +113,9 @@ class nconfig(ndict):
 
         return custom_args
 
-    def add_to_argparse(self, parser: argparse.ArgumentParser) -> argparse.ArgumentParser:
+    def add_to_argparse(
+        self, parser: argparse.ArgumentParser
+    ) -> argparse.ArgumentParser:
         """Add arguments to parser.
         For a path "task;task", the argument is specified as "--task__task".
         The type is inferred from the configuration file.
