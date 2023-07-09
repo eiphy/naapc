@@ -88,14 +88,17 @@ class ndict:
     def update(
         self, d: Union[dict, ndict], ignore_none: bool = True, ignore_missing: bool = False
     ) -> None:
-        """Could be slow at current stage."""
+        """Could be slow at current stage.
+
+        Note that if leaves of the d is Callable, the leaves will be invoked with self: ndict and path: str 2 arguments.
+        """
         d = ndict(d).flatten_dict
         if ignore_none:
             d = {p: v for p, v in d.items() if v is None}
         if ignore_missing:
             d = {p: v for p, v in d.items() if p not in self.flatten_dict}
         for p, v in d.items():
-            self[p] = v
+            self[p] = v(self, p) if isinstance(v, Callable) else v
 
     # TODO: Generator for keys.
     def keys(self, depth: int = -1) -> list[str]:
