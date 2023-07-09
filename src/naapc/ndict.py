@@ -10,8 +10,13 @@ from .stop_conditions import generate_depth_stop_condition
 from .dict_traverse import traverse
 
 
+def in_or_callable(d: Union[ndict, dict], k: Union[str, Callable]) -> bool:
+    return isinstance(k, Callable) or isinstance(k, str) and k in d
+
+
 # TODO: depth change to max_depth.
 # TODO: invoking internal implemntations using kwargs.
+# TODO: add comments.
 class ndict:
     """Due to the internal mechanism, modifications of the raw_dict will not be applied on the
     object."""
@@ -137,6 +142,7 @@ class ndict:
         traverse(tree=self.dict, res=res, actions=_size_action, depth=depth)
         return res
 
+    # TODO: Support a dummy path for aggregating in self ndict.
     def eq(
         self,
         d: Union[ndict, dict],
@@ -160,6 +166,7 @@ class ndict:
             missing_method: ignore: Won't include a path if it is missed in either party. false: Will retrun False if it
                 is missed in either party. exception: raise KeyError exception if is missed in either party.
         """
+        d = ndict(d)
         keys = self._get_compare_keys(
             d=d,
             keys=keys,
@@ -168,11 +175,40 @@ class ndict:
             ignore_none=ignore_none,
             missing_method=missing_method,
         )
-        d = ndict(d)
         for ps, pt in keys.items():
-            if self._get_compare_value(self, ps) != self._get_compare_value(d, pt):
+            if (
+                ps == False
+                or pt == False
+                or self._get_compare_value(self, ps) != self._get_compare_value(d, pt)
+            ):
                 return False
         return True
+
+    # TODO: Support a dummy path for aggregating in self ndict.
+    def diff(
+        self,
+        d: Union[ndict, dict],
+        keys: Optional[Union[dict, ndict]] = None,
+        includes: Optional[list[str]] = None,
+        excludes: Optional[list[str]] = None,
+        ignore_none: bool = True,
+    ) -> dict[str, tuple[Any, Any]]:
+        d = ndict(d)
+        keys = self._get_compare_keys(
+            d=d,
+            keys=keys,
+            includes=includes,
+            excludes=excludes,
+            ignore_none=ignore_none,
+            missing_method="exception",
+        )
+        res = {}
+        for ps, pt in keys.items():
+            vs = self._get_compare_value(self, ps) if ps in self else None
+            vt = self._get_compare_value(self, pt) if in_or_callable(d, pt) else None
+            if vs != vt or (vs is None and vt is not None or vs is not None and vt is None):
+                res[ps] = (vs, vt)
+        return res
 
     def set_delimiter(self, delimiter: str, old_delimiter: Optional[str] = None) -> None:
         old_delimiter = old_delimiter or self._delimiter
@@ -235,6 +271,9 @@ class ndict:
     def __str__(self) -> str:
         return yaml.dump(self.dict, sort_keys=False, indent=2)
 
+    def __repr__(self) -> str:
+        return f"<Nested dictionary of {len(self)} leaves.>"
+
     def _get_node(self, path: Union[str, list[str]]) -> Any:
         """Return the value of a particular path.
 
@@ -289,9 +328,9 @@ class ndict:
         keys.update({k: k for k in includes})
 
         if missing_method == "ignore":
-            keys = {k: v for k, v in keys.items() if k in self and k in d}
+            keys = {k: v for k, v in keys.items() if k in self and in_or_callable(d, v)}
         elif missing_method == "false":
-            keys = {k: v if k in self and k in d else False for k, v in keys.items()}
+            keys = {k: v if k in self and in_or_callable(d, v) else False for k, v in keys.items()}
 
         if ignore_none:
             keys = {k: v for k, v in keys.items() if self[k] is not None}
