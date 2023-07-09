@@ -17,13 +17,18 @@ def in_or_callable(d: Union[ndict, dict], k: Union[str, Callable]) -> bool:
 # TODO: depth change to max_depth.
 # TODO: invoking internal implemntations using kwargs.
 # TODO: add comments.
+# TODO: options to prevent changing earlier values.
+# TODO: _delimiter -> delimiter
 class ndict:
-    """Due to the internal mechanism, modifications of the raw_dict will not be applied on the
-    object."""
+    """Nested dictionary.
+
+    Users shouldn't modify the underling data outside of ndict class.
+    """
 
     _ALL_MISSING_METHODS = ["ignore", "false", "exception"]
 
     def __init__(self, d: Optional[Union[ndict, dict]] = None, delimiter: str = ";") -> None:
+        """Later values may overwrite the earlier values if later is a dict and d is also a dict. See init.json in test/."""
         assert isinstance(delimiter, str), f"delimiter must be str, but recieved {type(delimiter)}"
         self._delimiter = delimiter
 
@@ -32,15 +37,16 @@ class ndict:
             self._flatten_dict = d.flatten_dict
             if self._delimiter != d._delimiter:
                 self.set_delimiter(self._delimiter, d._delimiter)
-        elif d is None:
-            self._d = {}
-            self._flatten_dict = {}
         elif isinstance(d, dict):
             self._d = {}
             self._flatten_dict = {}
             # If v is a dictionary, then it will be flattened when the __setitem__ method tries to get the subtree
             # flatten dictionary recursively.
-            self.update(d)
+            for k, v in d.items():
+                self[k] = v
+        elif d is None:
+            self._d = {}
+            self._flatten_dict = {}
         else:
             raise TypeError(f"Unexpected type {type(d)}.")
 
@@ -60,6 +66,10 @@ class ndict:
         res = []
         traverse(self.dict, res, _path_action)
         return res
+
+    @property
+    def delimiter(self) -> str:
+        return self.delimiter
 
     def get(
         self,
@@ -220,38 +230,33 @@ class ndict:
 
     def __getitem__(self, path: str) -> None:
         try:
-            return self._get_node(path)
+            return self._get_node(path, dict_as_ndict=True)
         except KeyError as e:
             print(f"Cannot find path {path}")
             raise e
 
     def __delitem__(self, path: str) -> None:
         path_list = path.split(self._delimiter)
-        d = self._get_node(path_list[:-1])
+        d = self._get_node(path_list[:-1], dict_as_ndict=False)
         del d[path_list[-1]]
         for k in self._flatten_dict.keys():
             if k.startswith(path):
                 del self._flatten_dict[path]
 
+    # TODO A more efficient approach.
     def __setitem__(self, path: str, value: Any) -> None:
         assert isinstance(path, str), f"Path can only be str, recieved {type(path)}."
 
-        # Delete old node and flatten dict.
-        del self[path]
-
-        # Set new value.
-        path_list = path.split(self._delimiter)
-        d = self._get_node(path_list[:-1])
-        d[path_list[-1]] = value
-
-        # Add new flatten dict.
-        if isinstance(value, dict):
-            for p, v in ndict(value).flatten_dict:
-                tmp_p = ";".join([path, p])
-                assert tmp_p not in self._flatten_dict
-                self._flatten_dict[tmp_p] = v
-        else:
-            self._flatten_dict[path] = value
+        path_list = path.split(self.delimiter)
+        assert len(path_list) > 0, "The path length is 0!"
+        v = self._d
+        for i, node in enumerate(path[:-1], start=1):
+            tmp_p = self.delimiter.join(path[:i])
+            if node not in v or not isinstance(v, dict):  # Create if not exist.
+                v[node] = {}
+                self._flatten_dict[tmp_p] = {}
+            v = v[node]
+        v[path_list[-1]] = value
 
     def __len__(self) -> int:
         return len(self.flatten_dict)
@@ -274,7 +279,7 @@ class ndict:
     def __repr__(self) -> str:
         return f"<Nested dictionary of {len(self)} leaves.>"
 
-    def _get_node(self, path: Union[str, list[str]]) -> Any:
+    def _get_node(self, path: Union[str, list[str]], dict_as_ndict: bool) -> Any:
         """Return the value of a particular path.
 
         Return
@@ -284,7 +289,7 @@ class ndict:
             assert isinstance(path, str), f"Path can only be str, recieved {type(path)}."
             path = path.split(self._delimiter)
         v = reduce(getitem, path, self._d)
-        return self.__class__(v) if isinstance(v, dict) else v
+        return self.__class__(v) if dict_as_ndict and isinstance(v, dict) else v
 
     def _flatten(self) -> dict[str, Any]:
         def flatten_action(tree: dict, res: dict, node: Any, path: str, depth: int) -> None:

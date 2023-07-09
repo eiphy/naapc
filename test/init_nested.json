@@ -1,0 +1,48 @@
+{
+    "node1": "this",
+    "node2": 1.0,
+    "node3": 1,
+    "node4": true,
+    "node5": null,
+    "node6": [
+        "this",
+        1.0,
+        1,
+        true,
+        null
+    ],
+    "node7": {
+        "double": {
+            "trible": {
+                "leave": 123
+            }
+        }
+    },
+    "nested": {
+        "node1": "this",
+        "node2": 1.0,
+        "node3": 1,
+        "node4": true,
+        "node5": null,
+        "node7": {
+            "node8": 123.0,
+            "node9": "something",
+            "node10": null,
+            "node11": false,
+            "node12": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ]
+        },
+        "double": {
+            "node1": "this",
+            "node2": 1.0,
+            "node3": 1,
+            "node4": true,
+            "node5": null
+        }
+    }
+}
