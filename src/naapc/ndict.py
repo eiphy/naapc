@@ -11,11 +11,12 @@ from .dict_traverse import traverse
 
 
 # TODO: depth change to max_depth.
+# TODO: invoking internal implemntations using kwargs.
 class ndict:
     """Due to the internal mechanism, modifications of the raw_dict will not be applied on the
     object."""
 
-    _missing_methods = ["ignore", "false", "error"]
+    _ALL_MISSING_METHODS = ["ignore", "false", "exception"]
 
     def __init__(self, d: Optional[Union[ndict, dict]] = None, delimiter: str = ";") -> None:
         assert isinstance(delimiter, str), f"delimiter must be str, but recieved {type(delimiter)}"
@@ -83,7 +84,38 @@ class ndict:
             },
         }
 
-    # TODO: dict can be Callable.
+    def eq(
+        self,
+        d: Union[ndict, dict],
+        keys: Optional[Union[dict, ndict]] = None,
+        includes: Optional[list[str]] = None,
+        excludes: Optional[list[str]] = None,
+        ignore_none: bool = True,
+        missing_method: str = "ignore",
+    ) -> bool:
+        """Determine if two nested dictionary is equavelent.
+
+        Support customized comparison rules.
+
+        Args:
+            d: Can be both nested dictionary or flatten dictionary. Callables should accept self: ndict, d: ndict, p:
+                str 3 arguments.
+            keys: Used to specify the path mapping. Users may compare 1 path to another specified path. Callables should
+                accept self: ndict, d: ndict, p: str 3 arguments.
+        """
+        keys = self._get_compare_keys(
+            keys=keys,
+            includes=includes,
+            excludes=excludes,
+            ignore_none=ignore_none,
+            missing_method=missing_method,
+        )
+        d = ndict(d)
+        for ps, pt in keys.items():
+            if self._get_compare_value(self, ps) != self._get_compare_value(d, pt):
+                return False
+        return True
+
     # TODO: A more efficient implementation.
     def update(
         self, d: Union[dict, ndict], ignore_none: bool = True, ignore_missing: bool = False
@@ -229,3 +261,36 @@ class ndict:
             return key(self, **kwargs)
         except:
             return default
+
+    # TODO: A more efficient way to get the compare keys.
+    def _get_compare_keys(
+        self,
+        keys: Optional[Union[dict, ndict]],
+        includes: Optional[list[str]],
+        excludes: Optional[list[str]],
+        ignore_none: bool,
+        missing_method: str,
+    ) -> dict[str, Union[str, Callable]]:
+        assert (
+            missing_method in self._ALL_MISSING_METHODS
+        ), f"{missing_method} method is not in {self._ALL_MISSING_METHODS}."
+        excludes = excludes or []
+        if keys is None:
+            keys = {k: k for k in self.flatten_dict.keys() if k not in excludes}
+        else:
+            keys = {k: v for k, v in keys.items() if k not in excludes}
+        includes = [] if includes is None else [k for k in includes if k not in excludes]
+        keys.update({k: k for k in includes})
+
+        if missing_method == "ignore":
+            keys = {k: v for k, v in keys.items() if k in self}
+        elif missing_method == "false":
+            keys = {k: v if k in self else False for k, v in keys.items()}
+
+        if ignore_none:
+            keys = {k: v for k, v in keys.items() if self[k] is not None}
+
+        return keys
+
+    def _get_compare_value(self, d: ndict, p: Union[str, Callable]) -> Any:
+        return d.get(p, default=None) if isinstance(p, str) else p(self, d, p)
