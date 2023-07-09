@@ -84,38 +84,6 @@ class ndict:
             },
         }
 
-    def eq(
-        self,
-        d: Union[ndict, dict],
-        keys: Optional[Union[dict, ndict]] = None,
-        includes: Optional[list[str]] = None,
-        excludes: Optional[list[str]] = None,
-        ignore_none: bool = True,
-        missing_method: str = "ignore",
-    ) -> bool:
-        """Determine if two nested dictionary is equavelent.
-
-        Support customized comparison rules.
-
-        Args:
-            d: Can be both nested dictionary or flatten dictionary. Callables should accept self: ndict, d: ndict, p:
-                str 3 arguments.
-            keys: Used to specify the path mapping. Users may compare 1 path to another specified path. Callables should
-                accept self: ndict, d: ndict, p: str 3 arguments.
-        """
-        keys = self._get_compare_keys(
-            keys=keys,
-            includes=includes,
-            excludes=excludes,
-            ignore_none=ignore_none,
-            missing_method=missing_method,
-        )
-        d = ndict(d)
-        for ps, pt in keys.items():
-            if self._get_compare_value(self, ps) != self._get_compare_value(d, pt):
-                return False
-        return True
-
     # TODO: A more efficient implementation.
     def update(
         self, d: Union[dict, ndict], ignore_none: bool = True, ignore_missing: bool = False
@@ -168,6 +136,43 @@ class ndict:
         res = 0
         traverse(tree=self.dict, res=res, actions=_size_action, depth=depth)
         return res
+
+    def eq(
+        self,
+        d: Union[ndict, dict],
+        keys: Optional[Union[dict, ndict]] = None,
+        includes: Optional[list[str]] = None,
+        excludes: Optional[list[str]] = None,
+        ignore_none: bool = True,
+        missing_method: str = "ignore",
+    ) -> bool:
+        """Determine if two nested dictionary is equavelent.
+
+        Support customized comparison rules.
+
+        Args:
+            d: Can be both nested dictionary or flatten dictionary. Callables should accept self: ndict, d: ndict, p:
+                str 3 arguments.
+            keys: Used to specify the path mapping. Users may compare 1 path to another specified path. Callables should
+                accept self: ndict, d: ndict, p: str 3 arguments.
+            ignore_none: ignore the comparison if the value is None in self ndict. (Note that null value in d is also
+                compared)
+            missing_method: ignore: Won't include a path if it is missed in either party. false: Will retrun False if it
+                is missed in either party. exception: raise KeyError exception if is missed in either party.
+        """
+        keys = self._get_compare_keys(
+            d=d,
+            keys=keys,
+            includes=includes,
+            excludes=excludes,
+            ignore_none=ignore_none,
+            missing_method=missing_method,
+        )
+        d = ndict(d)
+        for ps, pt in keys.items():
+            if self._get_compare_value(self, ps) != self._get_compare_value(d, pt):
+                return False
+        return True
 
     def set_delimiter(self, delimiter: str, old_delimiter: Optional[str] = None) -> None:
         old_delimiter = old_delimiter or self._delimiter
@@ -265,6 +270,7 @@ class ndict:
     # TODO: A more efficient way to get the compare keys.
     def _get_compare_keys(
         self,
+        d: ndict,
         keys: Optional[Union[dict, ndict]],
         includes: Optional[list[str]],
         excludes: Optional[list[str]],
@@ -283,9 +289,9 @@ class ndict:
         keys.update({k: k for k in includes})
 
         if missing_method == "ignore":
-            keys = {k: v for k, v in keys.items() if k in self}
+            keys = {k: v for k, v in keys.items() if k in self and k in d}
         elif missing_method == "false":
-            keys = {k: v if k in self else False for k, v in keys.items()}
+            keys = {k: v if k in self and k in d else False for k, v in keys.items()}
 
         if ignore_none:
             keys = {k: v for k, v in keys.items() if self[k] is not None}
