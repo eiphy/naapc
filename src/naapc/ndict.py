@@ -69,7 +69,7 @@ class ndict:
 
     @property
     def delimiter(self) -> str:
-        return self.delimiter
+        return self._delimiter
 
     def get(
         self,
@@ -228,7 +228,7 @@ class ndict:
             p.replace(old_delimiter, delimiter)
             flatten_dict[p] = v
 
-    def __getitem__(self, path: str) -> None:
+    def __getitem__(self, path: str) -> Any:
         try:
             return self._get_node(path, dict_as_ndict=True)
         except KeyError as e:
@@ -246,17 +246,27 @@ class ndict:
     # TODO A more efficient approach.
     def __setitem__(self, path: str, value: Any) -> None:
         assert isinstance(path, str), f"Path can only be str, recieved {type(path)}."
-
         path_list = path.split(self.delimiter)
         assert len(path_list) > 0, "The path length is 0!"
-        v = self._d
-        for i, node in enumerate(path[:-1], start=1):
-            tmp_p = self.delimiter.join(path[:i])
-            if node not in v or not isinstance(v, dict):  # Create if not exist.
-                v[node] = {}
-                self._flatten_dict[tmp_p] = {}
-            v = v[node]
-        v[path_list[-1]] = value
+        d = self._d
+        for i, node in enumerate(path_list[:-1]):
+            if node not in d:
+                d[node] = {}
+            elif not isinstance(d[node], dict):
+                # Overwrite old value!
+                d[node] = {}
+                tmp_p = self._delimiter.join(path_list[: i + 1])
+                del self._flatten_dict[tmp_p]
+            d = d[node]
+        if isinstance(value, Union[dict, ndict]):
+            tmp = ndict(value)
+            d[path_list[-1]] = tmp.dict
+            for p, v in tmp.flatten_dict.items():
+                combined_path = self._delimiter.join([path, p])
+                self._flatten_dict[combined_path] = v
+        else:
+            d[path_list[-1]] = value
+            self._flatten_dict[path] = value
 
     def __len__(self) -> int:
         return len(self.flatten_dict)
