@@ -34,7 +34,7 @@ def dfs(
 
     if isinstance(node, dict):
         for k, v in node.items():
-            next_path = ";".join([path, k])
+            next_path = k if path is None else ";".join([path, k])
             dfs(tree, res, v, next_path, depth + 1, action, stop_condition)
     else:
         return res
@@ -70,7 +70,7 @@ def traverse(
     action = _generate_action_pipeline(actions)
     stop_condition = _generate_stop_condition_pipeline(stop_condition, depth)
 
-    return alg(tree, res, tree, "", 0, action, stop_condition)
+    return alg(tree, res, tree, None, 0, action, stop_condition)
 
 
 def _generate_action_pipeline(
@@ -84,11 +84,11 @@ def _generate_action_pipeline(
         default_action = actions
         specific_actions = {}
 
-    def action_pipeline(res: Any, node: Any, path: str, depth: int) -> None:
+    def action_pipeline(tree: Any, res: Any, node: Any, path: str, depth: int) -> None:
         if path in specific_actions:
-            specific_actions[path](res, node, path, depth)
+            specific_actions[path](tree, res, node, path, depth)
         else:
-            default_action(res, node, path, depth)
+            default_action(tree, res, node, path, depth)
 
     return action_pipeline
 

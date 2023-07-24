@@ -44,5 +44,6 @@
             "node5": null
         }
     },
-    "node7;double;trible;leave": 123
+    "node7;double;trible;leave": 123,
+    ";;;": 123
 }

@@ -61,7 +61,8 @@ class ndict:
     @property
     def paths(self) -> list[str]:
         def _path_action(tree: dict, res: list, node: Any, path: str, depth: int) -> None:
-            res.append(path)
+            if path is not None:
+                res.append(path)
 
         res = []
         traverse(self.dict, res, _path_action)

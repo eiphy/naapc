@@ -39,5 +39,6 @@
     "nested;double;node3": 1,
     "nested;double;node4": true,
     "nested;double;node5": null,
-    "node7;double;trible;leave": 123
+    "node7;double;trible;leave": 123,
+    ";;;": 123
 }

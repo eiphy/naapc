@@ -26,6 +26,19 @@ def test_init():
         d.flatten_dict, flatten, indent=4, sort_keys=False
     )
 
+    d1 = ndict(d)
+    assert d1.dict is d.dict
+    assert d1.flatten_dict is d.flatten_dict
+
+
+def test_paths():
+    with open(ROOT / "test/init.json", "r") as f:
+        d = ndict(json.load(f))
+
+    with open(ROOT / "test/init_paths.json", "r") as f:
+        paths = json.load(f)
+    assert d.paths == paths
+
 
 if __name__ == "__main__":
-    test_init()
+    test_paths()
