@@ -1,13 +1,15 @@
 from __future__ import annotations
-import yaml
 
 import json
 from copy import deepcopy
 from functools import reduce
 from operator import getitem
-from typing import Any, Optional, Union, Callable
-from .stop_conditions import generate_depth_stop_condition
+from typing import Any, Callable, Optional, Union
+
+import yaml
+
 from .dict_traverse import traverse
+from .stop_conditions import generate_depth_stop_condition
 
 
 def in_or_callable(d: Union[ndict, dict], k: Union[str, Callable]) -> bool:
@@ -233,7 +235,6 @@ class ndict:
         try:
             return self._get_node(path, dict_as_ndict=True)
         except KeyError as e:
-            print(f"Cannot find path {path}")
             raise e
 
     def __delitem__(self, path: str) -> None:
