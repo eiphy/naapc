@@ -232,18 +232,20 @@ class ndict:
             flatten_dict[p] = v
 
     def __getitem__(self, path: str) -> Any:
-        try:
-            return self._get_node(path, dict_as_ndict=True)
-        except KeyError as e:
-            raise e
+        return self._get_node(path, dict_as_ndict=True)
 
     def __delitem__(self, path: str) -> None:
         path_list = path.split(self._delimiter)
         d = self._get_node(path_list[:-1], dict_as_ndict=False)
         del d[path_list[-1]]
-        for k in self._flatten_dict.keys():
-            if k.startswith(path):
-                del self._flatten_dict[path]
+        if path:
+            self._flatten_dict = {p: v for p, v in self._flatten_dict.items() if not p.startswith(path)}
+        else:
+            self._flatten_dict = {p: v for p, v in self._flatten_dict.items() if not p.startswith(";") and p != ""}
+        if len(d) == 0:
+            if len(path_list) > 1:
+                parent_path = self._delimiter.join(path_list[:-1])
+                self._flatten_dict[parent_path] = {}
 
     # TODO A more efficient approach.
     def __setitem__(self, path: str, value: Any) -> None:

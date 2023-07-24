@@ -1,5 +1,6 @@
 import json
 import sys
+from copy import deepcopy
 from pathlib import Path
 
 import pytest
@@ -66,6 +67,24 @@ def test_getitem():
     with pytest.raises(KeyError):
         a = d["not_exist_path"]
 
+def test_delitem():
+    with open(ROOT / "test/init.json", "r") as f:
+        raw = json.load(f)
+    with open(ROOT / "test/init_del.json", "r") as f:
+        del_gt = json.load(f)
+    for p, gt in del_gt.items():
+        d = ndict(deepcopy(raw))
+        del d[p]
+        assert d.dict == gt["dict"]
+        assert d.flatten_dict == gt["flatten"]
+
+    with open(ROOT / "test/init_nested.json", "r") as f:
+        nested = json.load(f)
+    d = ndict(deepcopy(raw))
+    for k in nested.keys():
+        del d[k]
+    assert d.dict == {}
+    assert d.flatten_dict == {}
 
 if __name__ == "__main__":
-    test_getitem()
+    test_delitem()

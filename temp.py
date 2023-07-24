@@ -1,10 +1,13 @@
-import yaml
+import json
 
-from naapc import NDict
+with open("test/init_paths.json", "r") as f:
+    paths = json.load(f)
+with open("test/init_nested.json", "r") as f:
+    nested = json.load(f)
+with open("test/init_flatten.json", "r") as f:
+    flatten = json.load(f)
 
-with open("sample.yaml", "r") as f:
-    raw = yaml.safe_load(f)
-a = NDict(raw)
-raw["l"] = a.flatten_dict_split
-with open("sample.yaml", "w") as f:
-    yaml.safe_dump(raw, f, sort_keys=False)
+res = {p: {"dict": nested, "flatten": flatten} for p in paths}
+
+with open("test/init_del.json", "w") as f:
+    json.dump(res, f, sort_keys=False, indent=4)
