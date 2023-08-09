@@ -60,13 +60,7 @@ class ndict:
     @property
     def paths(self) -> list[str]:
         """Get all possible paths."""
-        def _path_action(tree: dict, res: list, node: Any, path: str, depth: int) -> None:
-            if path is not None:
-                res.append(path)
-
-        res = []
-        traverse(self.dict, res, _path_action)
-        return res
+        return self.keys(-1)
 
     @property
     def delimiter(self) -> str:
@@ -145,15 +139,16 @@ class ndict:
                 continue
             self[p] = v(self, p) if isinstance(v, Callable) else v
 
-    def keys(self, depth: int = -1) -> list[str]:
+    def keys(self, depth: int = 1) -> list[str]:
         def _keys_action(tree: dict, res: list[str], node: Any, path: str, depth: int):
-            res.append(path)
+            if path is not None:
+                res.append(path)
 
         res = []
         traverse(tree=self.dict, res=res, actions=_keys_action, depth=depth)
         return res
 
-    def values(self, depth: int = -1) -> list[Any]:
+    def values(self, depth: int = 1) -> list[Any]:
         def _values_action(tree: dict, res: list[str], node: Any, path: str, depth: int):
             res.append(node)
 
@@ -161,7 +156,7 @@ class ndict:
         traverse(tree=self.dict, res=res, actions=_values_action, depth=depth)
         return res
 
-    def items(self, depth: int = -1) -> list[tuple[str, Any]]:
+    def items(self, depth: int = 1) -> list[tuple[str, Any]]:
         def _items_action(
             tree: dict, res: list[tuple[str, Any]], node: Any, path: str, depth: int
         ):

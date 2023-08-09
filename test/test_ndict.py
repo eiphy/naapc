@@ -192,8 +192,6 @@ def test_update_no_filting():
 
 def test_update_filting():
     d = ndict()
-    with open(ROOT / "test/init_flatten.json", "r") as f:
-        flatten = json.load(f)
     with open(ROOT / "test/init_update_no_none_gt_nested.json", "r") as f:
         nested = json.load(f)
     with open(ROOT / "test/init_update_no_none_gt_flatten.json", "r") as f:
@@ -211,5 +209,26 @@ def test_update_filting():
     assert d.dict == {}
     assert d.flatten_dict == {}
 
+def test_keys():
+    with open(ROOT / "test/init.json", "r") as f:
+        d = ndict(json.load(f))
+
+    with open(ROOT / "test/init_keys_depth1.json", "r") as f:
+        gt = json.load(f)
+    assert set(d.keys()) == set(gt)
+    assert set(d.keys(1)) == set(gt)
+
+    with open(ROOT / "test/init_keys_depth2.json", "r") as f:
+        gt = json.load(f)
+    assert set(d.keys(2)) == set(gt)
+
+    with open(ROOT / "test/init_keys_depth3.json", "r") as f:
+        gt = json.load(f)
+    assert set(d.keys(3)) == set(gt)
+
+    with open(ROOT / "test/init_paths.json", "r") as f:
+        paths = json.load(f)
+    assert d.keys(-1) == paths
+
 if __name__ == "__main__":
-    test_update_no_filting()
+    test_keys()
