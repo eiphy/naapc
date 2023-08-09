@@ -296,5 +296,31 @@ def test_size():
     assert d.size(3, ignore_none=True) == len(d.keys(3)) - 4
     assert d.size(-1, ignore_none=True) == len(d.keys(-1)) - 4
 
+    size = d.size(ignore_none=False)
+    for k in d.keys():
+        del d[k]
+        assert d.size(ignore_none=False) == size - 1
+        size = d.size(ignore_none=False)
+
+def test_eq():
+    with open(TEST_ASSET / "init.json", "r") as f:
+        d = ndict(json.load(f))
+    d1 = deepcopy(d)
+    assert d == d1
+
+    flatten = {p: v for p, v in reversed(d.flatten_dict.items())}
+    d1 = ndict(flatten)
+    assert d == d1
+    assert d == flatten
+
+    d1["node1"] = "not exist"
+    assert d != d1
+    assert not d == d1
+
+    d1 = ndict(flatten)
+    d1["Not exist"] = "null"
+    assert d != d1
+    assert not d == d1
+
 if __name__ == "__main__":
-    test_size()
+    test_eq()

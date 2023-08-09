@@ -176,7 +176,7 @@ class ndict:
         return res
 
     # May let the users to cumstomize the conditions.
-    def size(self, max_depth: int = 1, ignore_none: bool = True) -> int:
+    def size(self, max_depth: int = 1, ignore_none: bool = False) -> int:
         def _size_action(tree: dict, res: list[int], node: Any, path: str, depth: int):
             if path is not None and (not isinstance(node, dict) or depth == max_depth) and (not ignore_none or ignore_none and node is not None):
                 res[0] += 1
@@ -186,53 +186,10 @@ class ndict:
         return res[0]
 
     # TODO: Support a dummy path for aggregating in self ndict.
-    def eq(
-        self,
-        d: Union[ndict, dict],
-        keys: Optional[Union[dict, ndict]] = None,
-        includes: Optional[list[str]] = None,
-        excludes: Optional[list[str]] = None,
-        ignore_none: bool = True,
-        missing_method: str = "ignore",
-    ) -> bool:
-        """Determine if two nested dictionary is equavelent.
-
-        Support customized comparison rules.
-
-        Args:
-            d: Can be both nested dictionary or flatten dictionary. Callables should accept self: ndict, d: ndict, p:
-                str 3 arguments.
-            keys: Used to specify the path mapping. Users may compare 1 path to another specified path. Callables should
-                accept self: ndict, d: ndict, p: str 3 arguments.
-            ignore_none: ignore the comparison if the value is None in self ndict. (Note that null value in d is also
-                compared)
-            missing_method: ignore: Won't include a path if it is missed in either party. false: Will retrun False if it
-                is missed in either party. exception: raise KeyError exception if is missed in either party.
-        """
-        d = ndict(d)
-        keys = self._get_compare_keys(
-            d=d,
-            keys=keys,
-            includes=includes,
-            excludes=excludes,
-            ignore_none=ignore_none,
-            missing_method=missing_method,
-        )
-        for ps, pt in keys.items():
-            if (
-                ps == False
-                or pt == False
-                or self._get_compare_value(self, ps) != self._get_compare_value(d, pt)
-            ):
-                return False
-        return True
-
-    # TODO: Support a dummy path for aggregating in self ndict.
     def diff(
         self,
         d: Union[ndict, dict],
-        keys: Optional[Union[dict, ndict]] = None,
-        includes: Optional[list[str]] = None,
+        keys: Optional[list] = None,
         excludes: Optional[list[str]] = None,
         ignore_none: bool = True,
     ) -> dict[str, tuple[Any, Any]]:
@@ -240,7 +197,6 @@ class ndict:
         keys = self._get_compare_keys(
             d=d,
             keys=keys,
-            includes=includes,
             excludes=excludes,
             ignore_none=ignore_none,
             missing_method="exception",
@@ -319,6 +275,10 @@ class ndict:
             d = d[n]
         return True
 
+    def __eq__(self, other: Union[dict, ndict]) -> bool:
+        other = ndict(other)
+        return self.flatten_dict == other.flatten_dict
+
     def __str__(self) -> str:
         return yaml.dump(self.dict, sort_keys=False, indent=2)
 
@@ -361,32 +321,34 @@ class ndict:
     def _get_compare_keys(
         self,
         d: ndict,
-        keys: Optional[Union[dict, ndict]],
-        includes: Optional[list[str]],
+        keys: Optional[list[Union[str, tuple]]],
         excludes: Optional[list[str]],
         ignore_none: bool,
         missing_method: str,
-    ) -> dict[str, Union[str, Callable]]:
+    ) -> list[tuple]:
         assert (
             missing_method in self.ALL_MISSING_METHODS
         ), f"{missing_method} method is not in {self.ALL_MISSING_METHODS}."
-        excludes = excludes or []
         if keys is None:
-            keys = {k: k for k in self.flatten_dict.keys() if k not in excludes}
+            keys = [(k, k) for k in self.flatten_dict.keys()]
         else:
-            keys = {k: v for k, v in keys.items() if k not in excludes}
-        includes = [] if includes is None else [k for k in includes if k not in excludes]
-        keys.update({k: k for k in includes})
+            keys = [(k, k) if isinstance(k, str) else k for k in keys]
 
-        if missing_method == "ignore":
-            keys = {k: v for k, v in keys.items() if k in self and in_or_callable(d, v)}
-        elif missing_method == "false":
-            keys = {k: v if k in self and in_or_callable(d, v) else False for k, v in keys.items()}
-
-        if ignore_none:
-            keys = {k: v for k, v in keys.items() if self[k] is not None}
-
-        return keys
+        excludes = excludes or []
+        res = []
+        for k1, k2 in keys:
+            if isinstance(k1, str) and k1 in excludes:
+                continue
+            if not in_or_callable(self, k1) or not in_or_callable(d, k2):
+                if missing_method == "ignore":
+                    continue
+                if missing_method == "false":
+                    res.append((lambda x, y: False, lambda x, y: True))
+                    continue
+            if ignore_none and isinstance(k1, str) and self[k1] is None:
+                continue
+            res.append((k1, k2))
+        return res
 
     def _get_compare_value(self, d: ndict, p: Union[str, Callable]) -> Any:
         return d.get(p, default=None) if isinstance(p, str) else p(self, d, p)
