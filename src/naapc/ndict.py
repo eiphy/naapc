@@ -141,7 +141,7 @@ class ndict:
         """
         d = ndict(d).flatten_dict
         for p, v in d.items():
-            if v is None and ignore_none or p not in self.flatten_dict:
+            if (v is None and ignore_none) or (p not in self.flatten_dict and ignore_missing):
                 continue
             self[p] = v(self, p) if isinstance(v, Callable) else v
 

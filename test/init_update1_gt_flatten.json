@@ -1,0 +1,46 @@
+{
+    "node1": 1.0,
+    "node2": null,
+    "not_exist": "here",
+    "node3": 1,
+    "node4": true,
+    "node5": null,
+    "node6": [
+        "this",
+        1.0,
+        1,
+        true,
+        null
+    ],
+    "nested;node1": "this",
+    "nested;node2": "something",
+    "nested;node3": 1,
+    "nested;node4": true,
+    "nested;node5": null,
+    "nested;node6": [
+        "this",
+        1.0,
+        1,
+        true,
+        null
+    ],
+    "nested;node7;node8": 123.0,
+    "nested;node7;node9": "something",
+    "nested;node7;node10": null,
+    "nested;node7;node11": false,
+    "nested;node7;node12": [
+        "this",
+        1.0,
+        1,
+        true,
+        null
+    ],
+    "nested;double;node1": "this",
+    "nested;double;node2": 1.0,
+    "nested;double;node3": 1,
+    "nested;double;node4": true,
+    "nested;double;node5": null,
+    "node7;double;trible;leave": 345,
+    "node7;double;trible;not_exist": 555,
+    ";;;": 123
+}
