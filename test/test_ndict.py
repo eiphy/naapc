@@ -15,7 +15,6 @@ if str(TEST_SRC_DIR) not in sys.path:
 from utils import get_dict_compare_msg
 
 
-# TODO Test "" key.
 def test_init():
     with open(ROOT / "test/init.json", "r") as f:
         raw = json.load(f)
