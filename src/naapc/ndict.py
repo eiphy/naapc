@@ -175,13 +175,15 @@ class ndict:
         traverse(tree=self.dict, res=res, actions=_items_action, depth=max_depth)
         return res
 
-    def size(self, depth: int = -1, ignore_none: bool = True) -> int:
-        def _size_action(tree: dict, res: int, node: Any, path: str, depth: int):
-            res += 1
+    # May let the users to cumstomize the conditions.
+    def size(self, max_depth: int = 1, ignore_none: bool = True) -> int:
+        def _size_action(tree: dict, res: list[int], node: Any, path: str, depth: int):
+            if path is not None and (not isinstance(node, dict) or depth == max_depth) and (not ignore_none or ignore_none and node is not None):
+                res[0] += 1
 
-        res = 0
-        traverse(tree=self.dict, res=res, actions=_size_action, depth=depth)
-        return res
+        res = [0]
+        traverse(tree=self.dict, res=res, actions=_size_action, depth=max_depth)
+        return res[0]
 
     # TODO: Support a dummy path for aggregating in self ndict.
     def eq(

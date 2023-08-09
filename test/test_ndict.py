@@ -283,5 +283,18 @@ def test_items():
         assert k == k_gt[i]
         assert v == v_gt[i]
 
+def test_size():
+    with open(TEST_ASSET / "init.json", "r") as f:
+        d = ndict(json.load(f))
+    assert d.size(ignore_none=False) == len(d.keys())
+    assert d.size(2, ignore_none=False) == len(d.keys(2))
+    assert d.size(3, ignore_none=False) == len(d.keys(3))
+    assert d.size(-1, ignore_none=False) == len(d.keys(-1))
+
+    assert d.size(ignore_none=True) == len(d.keys()) - 1
+    assert d.size(2, ignore_none=True) == len(d.keys(2)) - 2
+    assert d.size(3, ignore_none=True) == len(d.keys(3)) - 4
+    assert d.size(-1, ignore_none=True) == len(d.keys(-1)) - 4
+
 if __name__ == "__main__":
-    test_keys()
+    test_size()
