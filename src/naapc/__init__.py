@@ -1,6 +1,5 @@
 from typing import Union
 
-from .nconfig import CustomArgs, nconfig
 from .ndict import ndict
 
 NestedOrDict = Union[ndict, dict]
