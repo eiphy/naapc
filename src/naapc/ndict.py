@@ -164,15 +164,15 @@ class ndict:
         traverse(tree=self.dict, res=res, actions=_values_action, depth=max_depth)
         return res
 
-    def items(self, depth: int = 1) -> list[tuple[str, Any]]:
+    def items(self, max_depth: int = 1) -> list[tuple[str, Any]]:
         def _items_action(
             tree: dict, res: list[tuple[str, Any]], node: Any, path: str, depth: int
         ):
-            if path is not None:
+            if path is not None and (not isinstance(node, dict) or depth == max_depth):
                 res.append((path, node))
 
         res = []
-        traverse(tree=self.dict, res=res, actions=_items_action, depth=depth)
+        traverse(tree=self.dict, res=res, actions=_items_action, depth=max_depth)
         return res
 
     def size(self, depth: int = -1, ignore_none: bool = True) -> int:

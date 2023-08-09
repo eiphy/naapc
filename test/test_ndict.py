@@ -227,6 +227,9 @@ def test_keys():
         gt = json.load(f)
     assert set(d.keys(3)) == set(gt)
 
+    with open(TEST_ASSET / "init_keys_depth-1.json", "r") as f:
+        gt = json.load(f)
+    assert set(d.keys(-1)) == set(gt)
     assert set(d.keys(-1)) == set(d.flatten_dict.keys())
 
 def test_values():
@@ -245,5 +248,40 @@ def test_values():
         gt = json.load(f)
     assert d.values(-1) == gt
 
+def test_items():
+    with open(TEST_ASSET / "init.json", "r") as f:
+        d = ndict(json.load(f))
+    with open(TEST_ASSET / "init_keys_depth1.json", "r") as f:
+        k_gt = json.load(f)
+    with open(TEST_ASSET / "values_depth1.json", "r") as f:
+        v_gt = json.load(f)
+    for i, (k, v) in enumerate(d.items()):
+        assert k == k_gt[i]
+        assert v == v_gt[i]
+
+    with open(TEST_ASSET / "init_keys_depth2.json", "r") as f:
+        k_gt = json.load(f)
+    with open(TEST_ASSET / "values_depth2.json", "r") as f:
+        v_gt = json.load(f)
+    for i, (k, v) in enumerate(d.items(2)):
+        assert k == k_gt[i]
+        assert v == v_gt[i]
+
+    with open(TEST_ASSET / "init_keys_depth3.json", "r") as f:
+        k_gt = json.load(f)
+    with open(TEST_ASSET / "values_depth3.json", "r") as f:
+        v_gt = json.load(f)
+    for i, (k, v) in enumerate(d.items(3)):
+        assert k == k_gt[i]
+        assert v == v_gt[i]
+
+    with open(TEST_ASSET / "init_keys_depth-1.json", "r") as f:
+        k_gt = json.load(f)
+    with open(TEST_ASSET / "values_depth-1.json", "r") as f:
+        v_gt = json.load(f)
+    for i, (k, v) in enumerate(d.items(-1)):
+        assert k == k_gt[i]
+        assert v == v_gt[i]
+
 if __name__ == "__main__":
-    test_values()
+    test_keys()
