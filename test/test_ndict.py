@@ -4,6 +4,7 @@ from copy import deepcopy
 from pathlib import Path
 
 import pytest
+import yaml
 
 from naapc import ndict
 
@@ -88,6 +89,13 @@ def test_delitem():
     assert d.dict == {}
     assert d.flatten_dict == {}
 
+def test_bool():
+    d = ndict()
+    assert not d
+    d["something"] = 1
+    assert d
+    del d["something"]
+    assert not d
 
 def test_paths():
     with open(TEST_ASSET / "init.json", "r") as f:
@@ -322,5 +330,41 @@ def test_eq():
     assert d != d1
     assert not d == d1
 
+def test_diff():
+    with open(TEST_ASSET / "init.json", "r") as f:
+        d = ndict(json.load(f))
+    d1 = deepcopy(d)
+    assert d.diff(d1) == {} and isinstance(d.diff(d1), dict)
+    d1["node"] = "not"
+    assert d.diff(d1) == {"node": (None, "not")}
+    assert d1.diff(d) == {"node": ("not", None)}
+    d1["node1"] = "not"
+    assert d.diff(d1) == {"node": (None, "not"), "node1": ("this", "not")}
+    assert d1.diff(d) == {"node": ("not", None), "node1": ("not", "this")}
+
+def test_len():
+    with open(TEST_ASSET / "init.json", "r") as f:
+        d = ndict(json.load(f))
+    assert len(d) == d.size()
+    
+    for k in d.keys():
+        del d[k]
+        assert len(d) == d.size()
+
+def test_print():
+    with open(TEST_ASSET / "init.json", "r") as f:
+        d = ndict(json.load(f))
+    assert str(d) == yaml.dump(d.dict, indent=2, sort_keys=False)
+    assert d.json_str() == json.dumps(d.dict, sort_keys=False, indent=2)
+
+def test_contain():
+    with open(TEST_ASSET / "init.json", "r") as f:
+        d = ndict(json.load(f))
+    assert "node1" in d
+    assert "not exist" not in d
+    d = ndict()
+    assert "node1" not in d
+    assert "not exist" not in d
+
 if __name__ == "__main__":
-    test_eq()
+    test_bool()

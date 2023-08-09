@@ -185,29 +185,20 @@ class ndict:
         traverse(tree=self.dict, res=res, actions=_size_action, depth=max_depth)
         return res[0]
 
-    # TODO: Support a dummy path for aggregating in self ndict.
-    def diff(
-        self,
-        d: Union[ndict, dict],
-        keys: Optional[list] = None,
-        excludes: Optional[list[str]] = None,
-        ignore_none: bool = True,
-    ) -> dict[str, tuple[Any, Any]]:
+    def diff(self, d: Union[ndict, dict]) -> dict[str, tuple[Any, Any]]:
+        """Compare the leaves."""
         d = ndict(d)
-        keys = self._get_compare_keys(
-            d=d,
-            keys=keys,
-            excludes=excludes,
-            ignore_none=ignore_none,
-            missing_method="exception",
-        )
         res = {}
-        for ps, pt in keys.items():
-            vs = self._get_compare_value(self, ps) if ps in self else None
-            vt = self._get_compare_value(self, pt) if in_or_callable(d, pt) else None
-            if vs != vt or (vs is None and vt is not None or vs is not None and vt is None):
-                res[ps] = (vs, vt)
+        for p, v1 in self.flatten_dict.items():
+            if p not in d.flatten_dict:
+                res[p] = (v1, None)
+            elif v1 != d[p]:
+                res[p] = (v1, d[p])
+        res.update({p: (None, v) for p, v in d.flatten_dict.items() if p not in self})
         return res
+
+    def json_str(self, sort_keys: bool = False, indent: int = 2) -> str:
+        return json.dumps(self.dict, sort_keys=sort_keys, indent=indent)
 
     def __getitem__(self, key: Union[str, int]) -> Any:
         path = key if isinstance(key, str) else list(self.keys())[key]
@@ -261,12 +252,15 @@ class ndict:
             self._flatten_dict[path] = value
 
     def __len__(self) -> int:
-        return len(self.flatten_dict)
+        return len(self.dict)
 
     def __bool__(self) -> bool:
         return bool(len(self) > 0)
 
     def __contains__(self, path: str) -> bool:
+        if path in self.flatten_dict:
+            return True
+
         nodes = path.split(self._delimiter)
         d = self.dict
         for n in nodes:
@@ -316,39 +310,3 @@ class ndict:
         res = {}
         traverse(self.dict, res, flatten_action)
         return res
-
-    # TODO: A more efficient way to get the compare keys.
-    def _get_compare_keys(
-        self,
-        d: ndict,
-        keys: Optional[list[Union[str, tuple]]],
-        excludes: Optional[list[str]],
-        ignore_none: bool,
-        missing_method: str,
-    ) -> list[tuple]:
-        assert (
-            missing_method in self.ALL_MISSING_METHODS
-        ), f"{missing_method} method is not in {self.ALL_MISSING_METHODS}."
-        if keys is None:
-            keys = [(k, k) for k in self.flatten_dict.keys()]
-        else:
-            keys = [(k, k) if isinstance(k, str) else k for k in keys]
-
-        excludes = excludes or []
-        res = []
-        for k1, k2 in keys:
-            if isinstance(k1, str) and k1 in excludes:
-                continue
-            if not in_or_callable(self, k1) or not in_or_callable(d, k2):
-                if missing_method == "ignore":
-                    continue
-                if missing_method == "false":
-                    res.append((lambda x, y: False, lambda x, y: True))
-                    continue
-            if ignore_none and isinstance(k1, str) and self[k1] is None:
-                continue
-            res.append((k1, k2))
-        return res
-
-    def _get_compare_value(self, d: ndict, p: Union[str, Callable]) -> Any:
-        return d.get(p, default=None) if isinstance(p, str) else p(self, d, p)
