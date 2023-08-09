@@ -1,0 +1,48 @@
+[
+    "this",
+    1.0,
+    1,
+    true,
+    null,
+    [
+        "this",
+        1.0,
+        1,
+        true,
+        null
+    ],
+    {
+        "leave": 123
+    },
+    "this",
+    1.0,
+    1,
+    true,
+    null,
+    [
+        "this",
+        1.0,
+        1,
+        true,
+        null
+    ],
+    123.0,
+    "something",
+    null,
+    false,
+    [
+        "this",
+        1.0,
+        1,
+        true,
+        null
+    ],
+    "this",
+    1.0,
+    1,
+    true,
+    null,
+    {
+        "": 123
+    }
+]

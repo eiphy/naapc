@@ -60,7 +60,13 @@ class ndict:
     @property
     def paths(self) -> list[str]:
         """Get all possible paths."""
-        return self.keys(-1)
+        def _path_action(tree: dict, res: list[str], node: Any, path: str, depth: int):
+            if path is not None:
+                res.append(path)
+
+        res = []
+        traverse(tree=self.dict, res=res, actions=_path_action)
+        return res
 
     @property
     def delimiter(self) -> str:
@@ -139,28 +145,31 @@ class ndict:
                 continue
             self[p] = v(self, p) if isinstance(v, Callable) else v
 
-    def keys(self, depth: int = 1) -> list[str]:
+    def keys(self, max_depth: int = 1) -> list[str]:
+        """Return a list of leave and depth <= depth"""
         def _keys_action(tree: dict, res: list[str], node: Any, path: str, depth: int):
-            if path is not None:
+            if path is not None and (not isinstance(node, dict) or depth == max_depth):
                 res.append(path)
 
         res = []
-        traverse(tree=self.dict, res=res, actions=_keys_action, depth=depth)
+        traverse(tree=self.dict, res=res, actions=_keys_action, depth=max_depth)
         return res
 
-    def values(self, depth: int = 1) -> list[Any]:
-        def _values_action(tree: dict, res: list[str], node: Any, path: str, depth: int):
-            res.append(node)
+    def values(self, max_depth: int = 1) -> list[Any]:
+        def _values_action(tree: dict, res: list[Any], node: Any, path: str, depth: int):
+            if path is not None and (not isinstance(node, dict) or depth == max_depth):
+                res.append(node)
 
         res = []
-        traverse(tree=self.dict, res=res, actions=_values_action, depth=depth)
+        traverse(tree=self.dict, res=res, actions=_values_action, depth=max_depth)
         return res
 
     def items(self, depth: int = 1) -> list[tuple[str, Any]]:
         def _items_action(
             tree: dict, res: list[tuple[str, Any]], node: Any, path: str, depth: int
         ):
-            res.append((path, node))
+            if path is not None:
+                res.append((path, node))
 
         res = []
         traverse(tree=self.dict, res=res, actions=_items_action, depth=depth)
