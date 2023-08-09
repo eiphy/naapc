@@ -14,57 +14,6 @@ pip install .
 ```
 
 ## Typical Usage.
-Assume a configuration file test.yaml:
-```yaml
-task:
-  task: classification
-train:
-  pretrain: false
-  loss_args:
-    lr: 0.1
-```
-The typical usage is as follows:
-```python
-from naapc import nconfig
-from argparse import parser
-
-parser.add_argument("-c", type=str, dest="config")
-args, extra_args = parser.parse_known_args(["-c", "test.yaml", "--task;task", "regression", "--train;loss_args;lr", "0.2", "--train;pretrain", "1", "--others", "other"])
-
-with open(args.config, "r") as f:
-  raw = yaml.safe_load(f)
-config = nconfig(raw)
-extra_args = config.parse_update(parser, extra_args)
-```
-The resulting configurations:
-```yaml
-task:
-  task: regression
-train:
-  pretrain: true
-  loss_args:
-    lr: 0.2
-```
-
-The data type is determined by the type in the configuration file.
-The boolean data is treated as integer number 1 and 0 during parsing.
-
-You may custom the arguments:
-```yaml
-task:
-  task: regression
-train:
-  pretrain: true
-  loss_args:
-    lr: 0.2
-_ARGUMENT_SPECIFICATION:
-  task;task:
-    flag: --task
-    choices: ["regression", "classification"]
-  train;lr:
-    flag: lr
-```
-
 ## ndict Usages
 for a sample configuration test.yaml file:
 ```yaml
@@ -114,44 +63,10 @@ nd1 == nd                              # nd1.flatten_dict == nd.flatten_dict
 nd1["task;path"] = "xcwd"
 nd1["task;extra"] = "ecwd"
 nd["train;epochs"] = 100
-nd.compare_dict(nd1)                   # {"task;path": ("cwd", "xcwd"), "task;extra": (None, ecwd), "train;epochs": (100, None)}
-nd.is_matched(
-        {
-            "task;path": "ecwd", 
-            "train;epochs": "!QUERY d[path] == d['train;minimum_epochs']"
-        }
-    )                                  # Test if this dictionary is what you want.
+nd.diff(nd1)                   # {"task;path": ("cwd", "xcwd"), "task;extra": (None, ecwd), "train;epochs": (100, None)}
 ```
 
-## nconfig Usage
-nconfig only supports int, str, float, bool, and list of these types.
-The nconfig automatically checks data type when modifications are applied.
-Note that argument specification ("_ARGUMENT_SPECIFICATION") does not count as part of the configurations but will be saved when use save() method.
-The path specified as "_IGNORE_IN_CLI" will not be added to the parser.
-
-```python
-config.save("path.yaml")               # Save configurations as a yaml file
-config.add_to_argparse(parser)         # Generate cli arguments for every configuration.
-config.parse_update(parser, args)      # Parse cli arguments and update corresponding configuration. Extra arguments will be returned.
-```
-
-Typical specifications are as follows:
-```yaml
-_ARGUMENT_SPECIFICATION:
-  task;task:
-    flag: --task
-  task;seed:
-    flag: --seed
-  task;device:
-    flag: -d
-  data;dataset:
-    choices: ["cifar", "imagenet", "asap"]
-  log;comet_ml_key:
-    _IGNORE_IN_CLI
-
-```
-
-Other functionalities are the same to NDict.
+Check test/test_ndict.py for detailed usage.
 
 ## Typing
 Add a type
