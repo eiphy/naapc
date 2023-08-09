@@ -1,0 +1,49 @@
+{
+    "node1": "this",
+    "node2": 1.0,
+    "node3": 1,
+    "node4": true,
+    "node5": null,
+    "node6": [
+        "this",
+        1.0,
+        1,
+        true,
+        null
+    ],
+    "node7": 1234,
+    "nested": {
+        "node1": "this",
+        "node2": 1.0,
+        "node3": 1,
+        "node4": true,
+        "node5": null,
+        "node6": [
+            "this",
+            1.0,
+            1,
+            true,
+            null
+        ],
+        "node7;node8": 123.0,
+        "node7;node9": "something",
+        "node7;node10": null,
+        "node7;node11": false,
+        "node7;node12": [
+            "this",
+            1.0,
+            1,
+            true,
+            null
+        ],
+        "double": {
+            "node1": "this",
+            "node2": 1.0,
+            "node3": 1,
+            "node4": true,
+            "node5": null
+        }
+    },
+    "node7;double;trible;leave": 123,
+    ";;;": 123
+}

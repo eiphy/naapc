@@ -1,0 +1,56 @@
+[
+    "this",
+    1.0,
+    1,
+    true,
+    null,
+    [
+        "this",
+        1.0,
+        1,
+        true,
+        null
+    ],
+    {
+        "trible": {
+            "leave": 123
+        }
+    },
+    "this",
+    1.0,
+    1,
+    true,
+    null,
+    [
+        "this",
+        1.0,
+        1,
+        true,
+        null
+    ],
+    {
+        "node8": 123.0,
+        "node9": "something",
+        "node10": null,
+        "node11": false,
+        "node12": [
+            "this",
+            1.0,
+            1,
+            true,
+            null
+        ]
+    },
+    {
+        "node1": "this",
+        "node2": 1.0,
+        "node3": 1,
+        "node4": true,
+        "node5": null
+    },
+    {
+        "": {
+            "": 123
+        }
+    }
+]

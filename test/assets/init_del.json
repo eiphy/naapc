@@ -1,0 +1,3348 @@
+{
+    "node1": {
+        "dict": {
+            "node2": 1.0,
+            "node3": 1,
+            "node4": true,
+            "node5": null,
+            "node6": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "node7": {
+                "double": {
+                    "trible": {
+                        "leave": 123
+                    }
+                }
+            },
+            "nested": {
+                "node1": "this",
+                "node2": 1.0,
+                "node3": 1,
+                "node4": true,
+                "node5": null,
+                "node6": [
+                    "this",
+                    1.0,
+                    1,
+                    true,
+                    null
+                ],
+                "node7": {
+                    "node8": 123.0,
+                    "node9": "something",
+                    "node10": null,
+                    "node11": false,
+                    "node12": [
+                        "this",
+                        1.0,
+                        1,
+                        true,
+                        null
+                    ]
+                },
+                "double": {
+                    "node1": "this",
+                    "node2": 1.0,
+                    "node3": 1,
+                    "node4": true,
+                    "node5": null
+                }
+            },
+            "": {
+                "": {
+                    "": {
+                        "": 123
+                    }
+                }
+            }
+        },
+        "flatten": {
+            "node2": 1.0,
+            "node3": 1,
+            "node4": true,
+            "node5": null,
+            "node6": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "nested;node1": "this",
+            "nested;node2": 1.0,
+            "nested;node3": 1,
+            "nested;node4": true,
+            "nested;node5": null,
+            "nested;node6": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "nested;node7;node8": 123.0,
+            "nested;node7;node9": "something",
+            "nested;node7;node10": null,
+            "nested;node7;node11": false,
+            "nested;node7;node12": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "nested;double;node1": "this",
+            "nested;double;node2": 1.0,
+            "nested;double;node3": 1,
+            "nested;double;node4": true,
+            "nested;double;node5": null,
+            "node7;double;trible;leave": 123,
+            ";;;": 123
+        }
+    },
+    "node2": {
+        "dict": {
+            "node1": "this",
+            "node3": 1,
+            "node4": true,
+            "node5": null,
+            "node6": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "node7": {
+                "double": {
+                    "trible": {
+                        "leave": 123
+                    }
+                }
+            },
+            "nested": {
+                "node1": "this",
+                "node2": 1.0,
+                "node3": 1,
+                "node4": true,
+                "node5": null,
+                "node6": [
+                    "this",
+                    1.0,
+                    1,
+                    true,
+                    null
+                ],
+                "node7": {
+                    "node8": 123.0,
+                    "node9": "something",
+                    "node10": null,
+                    "node11": false,
+                    "node12": [
+                        "this",
+                        1.0,
+                        1,
+                        true,
+                        null
+                    ]
+                },
+                "double": {
+                    "node1": "this",
+                    "node2": 1.0,
+                    "node3": 1,
+                    "node4": true,
+                    "node5": null
+                }
+            },
+            "": {
+                "": {
+                    "": {
+                        "": 123
+                    }
+                }
+            }
+        },
+        "flatten": {
+            "node1": "this",
+            "node3": 1,
+            "node4": true,
+            "node5": null,
+            "node6": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "nested;node1": "this",
+            "nested;node2": 1.0,
+            "nested;node3": 1,
+            "nested;node4": true,
+            "nested;node5": null,
+            "nested;node6": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "nested;node7;node8": 123.0,
+            "nested;node7;node9": "something",
+            "nested;node7;node10": null,
+            "nested;node7;node11": false,
+            "nested;node7;node12": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "nested;double;node1": "this",
+            "nested;double;node2": 1.0,
+            "nested;double;node3": 1,
+            "nested;double;node4": true,
+            "nested;double;node5": null,
+            "node7;double;trible;leave": 123,
+            ";;;": 123
+        }
+    },
+    "node3": {
+        "dict": {
+            "node1": "this",
+            "node2": 1.0,
+            "node4": true,
+            "node5": null,
+            "node6": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "node7": {
+                "double": {
+                    "trible": {
+                        "leave": 123
+                    }
+                }
+            },
+            "nested": {
+                "node1": "this",
+                "node2": 1.0,
+                "node3": 1,
+                "node4": true,
+                "node5": null,
+                "node6": [
+                    "this",
+                    1.0,
+                    1,
+                    true,
+                    null
+                ],
+                "node7": {
+                    "node8": 123.0,
+                    "node9": "something",
+                    "node10": null,
+                    "node11": false,
+                    "node12": [
+                        "this",
+                        1.0,
+                        1,
+                        true,
+                        null
+                    ]
+                },
+                "double": {
+                    "node1": "this",
+                    "node2": 1.0,
+                    "node3": 1,
+                    "node4": true,
+                    "node5": null
+                }
+            },
+            "": {
+                "": {
+                    "": {
+                        "": 123
+                    }
+                }
+            }
+        },
+        "flatten": {
+            "node1": "this",
+            "node2": 1.0,
+            "node4": true,
+            "node5": null,
+            "node6": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "nested;node1": "this",
+            "nested;node2": 1.0,
+            "nested;node3": 1,
+            "nested;node4": true,
+            "nested;node5": null,
+            "nested;node6": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "nested;node7;node8": 123.0,
+            "nested;node7;node9": "something",
+            "nested;node7;node10": null,
+            "nested;node7;node11": false,
+            "nested;node7;node12": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "nested;double;node1": "this",
+            "nested;double;node2": 1.0,
+            "nested;double;node3": 1,
+            "nested;double;node4": true,
+            "nested;double;node5": null,
+            "node7;double;trible;leave": 123,
+            ";;;": 123
+        }
+    },
+    "node4": {
+        "dict": {
+            "node1": "this",
+            "node2": 1.0,
+            "node3": 1,
+            "node5": null,
+            "node6": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "node7": {
+                "double": {
+                    "trible": {
+                        "leave": 123
+                    }
+                }
+            },
+            "nested": {
+                "node1": "this",
+                "node2": 1.0,
+                "node3": 1,
+                "node4": true,
+                "node5": null,
+                "node6": [
+                    "this",
+                    1.0,
+                    1,
+                    true,
+                    null
+                ],
+                "node7": {
+                    "node8": 123.0,
+                    "node9": "something",
+                    "node10": null,
+                    "node11": false,
+                    "node12": [
+                        "this",
+                        1.0,
+                        1,
+                        true,
+                        null
+                    ]
+                },
+                "double": {
+                    "node1": "this",
+                    "node2": 1.0,
+                    "node3": 1,
+                    "node4": true,
+                    "node5": null
+                }
+            },
+            "": {
+                "": {
+                    "": {
+                        "": 123
+                    }
+                }
+            }
+        },
+        "flatten": {
+            "node1": "this",
+            "node2": 1.0,
+            "node3": 1,
+            "node5": null,
+            "node6": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "nested;node1": "this",
+            "nested;node2": 1.0,
+            "nested;node3": 1,
+            "nested;node4": true,
+            "nested;node5": null,
+            "nested;node6": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "nested;node7;node8": 123.0,
+            "nested;node7;node9": "something",
+            "nested;node7;node10": null,
+            "nested;node7;node11": false,
+            "nested;node7;node12": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "nested;double;node1": "this",
+            "nested;double;node2": 1.0,
+            "nested;double;node3": 1,
+            "nested;double;node4": true,
+            "nested;double;node5": null,
+            "node7;double;trible;leave": 123,
+            ";;;": 123
+        }
+    },
+    "node5": {
+        "dict": {
+            "node1": "this",
+            "node2": 1.0,
+            "node3": 1,
+            "node4": true,
+            "node6": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "node7": {
+                "double": {
+                    "trible": {
+                        "leave": 123
+                    }
+                }
+            },
+            "nested": {
+                "node1": "this",
+                "node2": 1.0,
+                "node3": 1,
+                "node4": true,
+                "node5": null,
+                "node6": [
+                    "this",
+                    1.0,
+                    1,
+                    true,
+                    null
+                ],
+                "node7": {
+                    "node8": 123.0,
+                    "node9": "something",
+                    "node10": null,
+                    "node11": false,
+                    "node12": [
+                        "this",
+                        1.0,
+                        1,
+                        true,
+                        null
+                    ]
+                },
+                "double": {
+                    "node1": "this",
+                    "node2": 1.0,
+                    "node3": 1,
+                    "node4": true,
+                    "node5": null
+                }
+            },
+            "": {
+                "": {
+                    "": {
+                        "": 123
+                    }
+                }
+            }
+        },
+        "flatten": {
+            "node1": "this",
+            "node2": 1.0,
+            "node3": 1,
+            "node4": true,
+            "node6": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "nested;node1": "this",
+            "nested;node2": 1.0,
+            "nested;node3": 1,
+            "nested;node4": true,
+            "nested;node5": null,
+            "nested;node6": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "nested;node7;node8": 123.0,
+            "nested;node7;node9": "something",
+            "nested;node7;node10": null,
+            "nested;node7;node11": false,
+            "nested;node7;node12": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "nested;double;node1": "this",
+            "nested;double;node2": 1.0,
+            "nested;double;node3": 1,
+            "nested;double;node4": true,
+            "nested;double;node5": null,
+            "node7;double;trible;leave": 123,
+            ";;;": 123
+        }
+    },
+    "node6": {
+        "dict": {
+            "node1": "this",
+            "node2": 1.0,
+            "node3": 1,
+            "node4": true,
+            "node5": null,
+            "node7": {
+                "double": {
+                    "trible": {
+                        "leave": 123
+                    }
+                }
+            },
+            "nested": {
+                "node1": "this",
+                "node2": 1.0,
+                "node3": 1,
+                "node4": true,
+                "node5": null,
+                "node6": [
+                    "this",
+                    1.0,
+                    1,
+                    true,
+                    null
+                ],
+                "node7": {
+                    "node8": 123.0,
+                    "node9": "something",
+                    "node10": null,
+                    "node11": false,
+                    "node12": [
+                        "this",
+                        1.0,
+                        1,
+                        true,
+                        null
+                    ]
+                },
+                "double": {
+                    "node1": "this",
+                    "node2": 1.0,
+                    "node3": 1,
+                    "node4": true,
+                    "node5": null
+                }
+            },
+            "": {
+                "": {
+                    "": {
+                        "": 123
+                    }
+                }
+            }
+        },
+        "flatten": {
+            "node1": "this",
+            "node2": 1.0,
+            "node3": 1,
+            "node4": true,
+            "node5": null,
+            "nested;node1": "this",
+            "nested;node2": 1.0,
+            "nested;node3": 1,
+            "nested;node4": true,
+            "nested;node5": null,
+            "nested;node6": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "nested;node7;node8": 123.0,
+            "nested;node7;node9": "something",
+            "nested;node7;node10": null,
+            "nested;node7;node11": false,
+            "nested;node7;node12": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "nested;double;node1": "this",
+            "nested;double;node2": 1.0,
+            "nested;double;node3": 1,
+            "nested;double;node4": true,
+            "nested;double;node5": null,
+            "node7;double;trible;leave": 123,
+            ";;;": 123
+        }
+    },
+    "node7": {
+        "dict": {
+            "node1": "this",
+            "node2": 1.0,
+            "node3": 1,
+            "node4": true,
+            "node5": null,
+            "node6": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "nested": {
+                "node1": "this",
+                "node2": 1.0,
+                "node3": 1,
+                "node4": true,
+                "node5": null,
+                "node6": [
+                    "this",
+                    1.0,
+                    1,
+                    true,
+                    null
+                ],
+                "node7": {
+                    "node8": 123.0,
+                    "node9": "something",
+                    "node10": null,
+                    "node11": false,
+                    "node12": [
+                        "this",
+                        1.0,
+                        1,
+                        true,
+                        null
+                    ]
+                },
+                "double": {
+                    "node1": "this",
+                    "node2": 1.0,
+                    "node3": 1,
+                    "node4": true,
+                    "node5": null
+                }
+            },
+            "": {
+                "": {
+                    "": {
+                        "": 123
+                    }
+                }
+            }
+        },
+        "flatten": {
+            "node1": "this",
+            "node2": 1.0,
+            "node3": 1,
+            "node4": true,
+            "node5": null,
+            "node6": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "nested;node1": "this",
+            "nested;node2": 1.0,
+            "nested;node3": 1,
+            "nested;node4": true,
+            "nested;node5": null,
+            "nested;node6": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "nested;node7;node8": 123.0,
+            "nested;node7;node9": "something",
+            "nested;node7;node10": null,
+            "nested;node7;node11": false,
+            "nested;node7;node12": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "nested;double;node1": "this",
+            "nested;double;node2": 1.0,
+            "nested;double;node3": 1,
+            "nested;double;node4": true,
+            "nested;double;node5": null,
+            ";;;": 123
+        }
+    },
+    "node7;double": {
+        "dict": {
+            "node1": "this",
+            "node2": 1.0,
+            "node3": 1,
+            "node4": true,
+            "node5": null,
+            "node6": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "node7": {},
+            "nested": {
+                "node1": "this",
+                "node2": 1.0,
+                "node3": 1,
+                "node4": true,
+                "node5": null,
+                "node6": [
+                    "this",
+                    1.0,
+                    1,
+                    true,
+                    null
+                ],
+                "node7": {
+                    "node8": 123.0,
+                    "node9": "something",
+                    "node10": null,
+                    "node11": false,
+                    "node12": [
+                        "this",
+                        1.0,
+                        1,
+                        true,
+                        null
+                    ]
+                },
+                "double": {
+                    "node1": "this",
+                    "node2": 1.0,
+                    "node3": 1,
+                    "node4": true,
+                    "node5": null
+                }
+            },
+            "": {
+                "": {
+                    "": {
+                        "": 123
+                    }
+                }
+            }
+        },
+        "flatten": {
+            "node1": "this",
+            "node2": 1.0,
+            "node3": 1,
+            "node4": true,
+            "node5": null,
+            "node6": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "nested;node1": "this",
+            "nested;node2": 1.0,
+            "nested;node3": 1,
+            "nested;node4": true,
+            "nested;node5": null,
+            "nested;node6": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "nested;node7;node8": 123.0,
+            "nested;node7;node9": "something",
+            "nested;node7;node10": null,
+            "nested;node7;node11": false,
+            "nested;node7;node12": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "nested;double;node1": "this",
+            "nested;double;node2": 1.0,
+            "nested;double;node3": 1,
+            "nested;double;node4": true,
+            "nested;double;node5": null,
+            "node7": {},
+            ";;;": 123
+        }
+    },
+    "node7;double;trible": {
+        "dict": {
+            "node1": "this",
+            "node2": 1.0,
+            "node3": 1,
+            "node4": true,
+            "node5": null,
+            "node6": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "node7": {
+                "double": {}
+            },
+            "nested": {
+                "node1": "this",
+                "node2": 1.0,
+                "node3": 1,
+                "node4": true,
+                "node5": null,
+                "node6": [
+                    "this",
+                    1.0,
+                    1,
+                    true,
+                    null
+                ],
+                "node7": {
+                    "node8": 123.0,
+                    "node9": "something",
+                    "node10": null,
+                    "node11": false,
+                    "node12": [
+                        "this",
+                        1.0,
+                        1,
+                        true,
+                        null
+                    ]
+                },
+                "double": {
+                    "node1": "this",
+                    "node2": 1.0,
+                    "node3": 1,
+                    "node4": true,
+                    "node5": null
+                }
+            },
+            "": {
+                "": {
+                    "": {
+                        "": 123
+                    }
+                }
+            }
+        },
+        "flatten": {
+            "node1": "this",
+            "node2": 1.0,
+            "node3": 1,
+            "node4": true,
+            "node5": null,
+            "node6": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "nested;node1": "this",
+            "nested;node2": 1.0,
+            "nested;node3": 1,
+            "nested;node4": true,
+            "nested;node5": null,
+            "nested;node6": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "nested;node7;node8": 123.0,
+            "nested;node7;node9": "something",
+            "nested;node7;node10": null,
+            "nested;node7;node11": false,
+            "nested;node7;node12": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "nested;double;node1": "this",
+            "nested;double;node2": 1.0,
+            "nested;double;node3": 1,
+            "nested;double;node4": true,
+            "nested;double;node5": null,
+            "node7;double": {},
+            ";;;": 123
+        }
+    },
+    "node7;double;trible;leave": {
+        "dict": {
+            "node1": "this",
+            "node2": 1.0,
+            "node3": 1,
+            "node4": true,
+            "node5": null,
+            "node6": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "node7": {
+                "double": {
+                    "trible": {}
+                }
+            },
+            "nested": {
+                "node1": "this",
+                "node2": 1.0,
+                "node3": 1,
+                "node4": true,
+                "node5": null,
+                "node6": [
+                    "this",
+                    1.0,
+                    1,
+                    true,
+                    null
+                ],
+                "node7": {
+                    "node8": 123.0,
+                    "node9": "something",
+                    "node10": null,
+                    "node11": false,
+                    "node12": [
+                        "this",
+                        1.0,
+                        1,
+                        true,
+                        null
+                    ]
+                },
+                "double": {
+                    "node1": "this",
+                    "node2": 1.0,
+                    "node3": 1,
+                    "node4": true,
+                    "node5": null
+                }
+            },
+            "": {
+                "": {
+                    "": {
+                        "": 123
+                    }
+                }
+            }
+        },
+        "flatten": {
+            "node1": "this",
+            "node2": 1.0,
+            "node3": 1,
+            "node4": true,
+            "node5": null,
+            "node6": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "nested;node1": "this",
+            "nested;node2": 1.0,
+            "nested;node3": 1,
+            "nested;node4": true,
+            "nested;node5": null,
+            "nested;node6": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "nested;node7;node8": 123.0,
+            "nested;node7;node9": "something",
+            "nested;node7;node10": null,
+            "nested;node7;node11": false,
+            "nested;node7;node12": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "nested;double;node1": "this",
+            "nested;double;node2": 1.0,
+            "nested;double;node3": 1,
+            "nested;double;node4": true,
+            "nested;double;node5": null,
+            "node7;double;trible": {},
+            ";;;": 123
+        }
+    },
+    "nested": {
+        "dict": {
+            "node1": "this",
+            "node2": 1.0,
+            "node3": 1,
+            "node4": true,
+            "node5": null,
+            "node6": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "node7": {
+                "double": {
+                    "trible": {
+                        "leave": 123
+                    }
+                }
+            },
+            "": {
+                "": {
+                    "": {
+                        "": 123
+                    }
+                }
+            }
+        },
+        "flatten": {
+            "node1": "this",
+            "node2": 1.0,
+            "node3": 1,
+            "node4": true,
+            "node5": null,
+            "node6": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "node7;double;trible;leave": 123,
+            ";;;": 123
+        }
+    },
+    "nested;node1": {
+        "dict": {
+            "node1": "this",
+            "node2": 1.0,
+            "node3": 1,
+            "node4": true,
+            "node5": null,
+            "node6": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "node7": {
+                "double": {
+                    "trible": {
+                        "leave": 123
+                    }
+                }
+            },
+            "nested": {
+                "node2": 1.0,
+                "node3": 1,
+                "node4": true,
+                "node5": null,
+                "node6": [
+                    "this",
+                    1.0,
+                    1,
+                    true,
+                    null
+                ],
+                "node7": {
+                    "node8": 123.0,
+                    "node9": "something",
+                    "node10": null,
+                    "node11": false,
+                    "node12": [
+                        "this",
+                        1.0,
+                        1,
+                        true,
+                        null
+                    ]
+                },
+                "double": {
+                    "node1": "this",
+                    "node2": 1.0,
+                    "node3": 1,
+                    "node4": true,
+                    "node5": null
+                }
+            },
+            "": {
+                "": {
+                    "": {
+                        "": 123
+                    }
+                }
+            }
+        },
+        "flatten": {
+            "node1": "this",
+            "node2": 1.0,
+            "node3": 1,
+            "node4": true,
+            "node5": null,
+            "node6": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "nested;node2": 1.0,
+            "nested;node3": 1,
+            "nested;node4": true,
+            "nested;node5": null,
+            "nested;node6": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "nested;node7;node8": 123.0,
+            "nested;node7;node9": "something",
+            "nested;node7;node10": null,
+            "nested;node7;node11": false,
+            "nested;node7;node12": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "nested;double;node1": "this",
+            "nested;double;node2": 1.0,
+            "nested;double;node3": 1,
+            "nested;double;node4": true,
+            "nested;double;node5": null,
+            "node7;double;trible;leave": 123,
+            ";;;": 123
+        }
+    },
+    "nested;node2": {
+        "dict": {
+            "node1": "this",
+            "node2": 1.0,
+            "node3": 1,
+            "node4": true,
+            "node5": null,
+            "node6": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "node7": {
+                "double": {
+                    "trible": {
+                        "leave": 123
+                    }
+                }
+            },
+            "nested": {
+                "node1": "this",
+                "node3": 1,
+                "node4": true,
+                "node5": null,
+                "node6": [
+                    "this",
+                    1.0,
+                    1,
+                    true,
+                    null
+                ],
+                "node7": {
+                    "node8": 123.0,
+                    "node9": "something",
+                    "node10": null,
+                    "node11": false,
+                    "node12": [
+                        "this",
+                        1.0,
+                        1,
+                        true,
+                        null
+                    ]
+                },
+                "double": {
+                    "node1": "this",
+                    "node2": 1.0,
+                    "node3": 1,
+                    "node4": true,
+                    "node5": null
+                }
+            },
+            "": {
+                "": {
+                    "": {
+                        "": 123
+                    }
+                }
+            }
+        },
+        "flatten": {
+            "node1": "this",
+            "node2": 1.0,
+            "node3": 1,
+            "node4": true,
+            "node5": null,
+            "node6": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "nested;node1": "this",
+            "nested;node3": 1,
+            "nested;node4": true,
+            "nested;node5": null,
+            "nested;node6": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "nested;node7;node8": 123.0,
+            "nested;node7;node9": "something",
+            "nested;node7;node10": null,
+            "nested;node7;node11": false,
+            "nested;node7;node12": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "nested;double;node1": "this",
+            "nested;double;node2": 1.0,
+            "nested;double;node3": 1,
+            "nested;double;node4": true,
+            "nested;double;node5": null,
+            "node7;double;trible;leave": 123,
+            ";;;": 123
+        }
+    },
+    "nested;node3": {
+        "dict": {
+            "node1": "this",
+            "node2": 1.0,
+            "node3": 1,
+            "node4": true,
+            "node5": null,
+            "node6": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "node7": {
+                "double": {
+                    "trible": {
+                        "leave": 123
+                    }
+                }
+            },
+            "nested": {
+                "node1": "this",
+                "node2": 1.0,
+                "node4": true,
+                "node5": null,
+                "node6": [
+                    "this",
+                    1.0,
+                    1,
+                    true,
+                    null
+                ],
+                "node7": {
+                    "node8": 123.0,
+                    "node9": "something",
+                    "node10": null,
+                    "node11": false,
+                    "node12": [
+                        "this",
+                        1.0,
+                        1,
+                        true,
+                        null
+                    ]
+                },
+                "double": {
+                    "node1": "this",
+                    "node2": 1.0,
+                    "node3": 1,
+                    "node4": true,
+                    "node5": null
+                }
+            },
+            "": {
+                "": {
+                    "": {
+                        "": 123
+                    }
+                }
+            }
+        },
+        "flatten": {
+            "node1": "this",
+            "node2": 1.0,
+            "node3": 1,
+            "node4": true,
+            "node5": null,
+            "node6": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "nested;node1": "this",
+            "nested;node2": 1.0,
+            "nested;node4": true,
+            "nested;node5": null,
+            "nested;node6": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "nested;node7;node8": 123.0,
+            "nested;node7;node9": "something",
+            "nested;node7;node10": null,
+            "nested;node7;node11": false,
+            "nested;node7;node12": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "nested;double;node1": "this",
+            "nested;double;node2": 1.0,
+            "nested;double;node3": 1,
+            "nested;double;node4": true,
+            "nested;double;node5": null,
+            "node7;double;trible;leave": 123,
+            ";;;": 123
+        }
+    },
+    "nested;node4": {
+        "dict": {
+            "node1": "this",
+            "node2": 1.0,
+            "node3": 1,
+            "node4": true,
+            "node5": null,
+            "node6": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "node7": {
+                "double": {
+                    "trible": {
+                        "leave": 123
+                    }
+                }
+            },
+            "nested": {
+                "node1": "this",
+                "node2": 1.0,
+                "node3": 1,
+                "node5": null,
+                "node6": [
+                    "this",
+                    1.0,
+                    1,
+                    true,
+                    null
+                ],
+                "node7": {
+                    "node8": 123.0,
+                    "node9": "something",
+                    "node10": null,
+                    "node11": false,
+                    "node12": [
+                        "this",
+                        1.0,
+                        1,
+                        true,
+                        null
+                    ]
+                },
+                "double": {
+                    "node1": "this",
+                    "node2": 1.0,
+                    "node3": 1,
+                    "node4": true,
+                    "node5": null
+                }
+            },
+            "": {
+                "": {
+                    "": {
+                        "": 123
+                    }
+                }
+            }
+        },
+        "flatten": {
+            "node1": "this",
+            "node2": 1.0,
+            "node3": 1,
+            "node4": true,
+            "node5": null,
+            "node6": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "nested;node1": "this",
+            "nested;node2": 1.0,
+            "nested;node3": 1,
+            "nested;node5": null,
+            "nested;node6": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "nested;node7;node8": 123.0,
+            "nested;node7;node9": "something",
+            "nested;node7;node10": null,
+            "nested;node7;node11": false,
+            "nested;node7;node12": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "nested;double;node1": "this",
+            "nested;double;node2": 1.0,
+            "nested;double;node3": 1,
+            "nested;double;node4": true,
+            "nested;double;node5": null,
+            "node7;double;trible;leave": 123,
+            ";;;": 123
+        }
+    },
+    "nested;node5": {
+        "dict": {
+            "node1": "this",
+            "node2": 1.0,
+            "node3": 1,
+            "node4": true,
+            "node5": null,
+            "node6": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "node7": {
+                "double": {
+                    "trible": {
+                        "leave": 123
+                    }
+                }
+            },
+            "nested": {
+                "node1": "this",
+                "node2": 1.0,
+                "node3": 1,
+                "node4": true,
+                "node6": [
+                    "this",
+                    1.0,
+                    1,
+                    true,
+                    null
+                ],
+                "node7": {
+                    "node8": 123.0,
+                    "node9": "something",
+                    "node10": null,
+                    "node11": false,
+                    "node12": [
+                        "this",
+                        1.0,
+                        1,
+                        true,
+                        null
+                    ]
+                },
+                "double": {
+                    "node1": "this",
+                    "node2": 1.0,
+                    "node3": 1,
+                    "node4": true,
+                    "node5": null
+                }
+            },
+            "": {
+                "": {
+                    "": {
+                        "": 123
+                    }
+                }
+            }
+        },
+        "flatten": {
+            "node1": "this",
+            "node2": 1.0,
+            "node3": 1,
+            "node4": true,
+            "node5": null,
+            "node6": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "nested;node1": "this",
+            "nested;node2": 1.0,
+            "nested;node3": 1,
+            "nested;node4": true,
+            "nested;node6": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "nested;node7;node8": 123.0,
+            "nested;node7;node9": "something",
+            "nested;node7;node10": null,
+            "nested;node7;node11": false,
+            "nested;node7;node12": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "nested;double;node1": "this",
+            "nested;double;node2": 1.0,
+            "nested;double;node3": 1,
+            "nested;double;node4": true,
+            "nested;double;node5": null,
+            "node7;double;trible;leave": 123,
+            ";;;": 123
+        }
+    },
+    "nested;node6": {
+        "dict": {
+            "node1": "this",
+            "node2": 1.0,
+            "node3": 1,
+            "node4": true,
+            "node5": null,
+            "node6": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "node7": {
+                "double": {
+                    "trible": {
+                        "leave": 123
+                    }
+                }
+            },
+            "nested": {
+                "node1": "this",
+                "node2": 1.0,
+                "node3": 1,
+                "node4": true,
+                "node5": null,
+                "node7": {
+                    "node8": 123.0,
+                    "node9": "something",
+                    "node10": null,
+                    "node11": false,
+                    "node12": [
+                        "this",
+                        1.0,
+                        1,
+                        true,
+                        null
+                    ]
+                },
+                "double": {
+                    "node1": "this",
+                    "node2": 1.0,
+                    "node3": 1,
+                    "node4": true,
+                    "node5": null
+                }
+            },
+            "": {
+                "": {
+                    "": {
+                        "": 123
+                    }
+                }
+            }
+        },
+        "flatten": {
+            "node1": "this",
+            "node2": 1.0,
+            "node3": 1,
+            "node4": true,
+            "node5": null,
+            "node6": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "nested;node1": "this",
+            "nested;node2": 1.0,
+            "nested;node3": 1,
+            "nested;node4": true,
+            "nested;node5": null,
+            "nested;node7;node8": 123.0,
+            "nested;node7;node9": "something",
+            "nested;node7;node10": null,
+            "nested;node7;node11": false,
+            "nested;node7;node12": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "nested;double;node1": "this",
+            "nested;double;node2": 1.0,
+            "nested;double;node3": 1,
+            "nested;double;node4": true,
+            "nested;double;node5": null,
+            "node7;double;trible;leave": 123,
+            ";;;": 123
+        }
+    },
+    "nested;node7": {
+        "dict": {
+            "node1": "this",
+            "node2": 1.0,
+            "node3": 1,
+            "node4": true,
+            "node5": null,
+            "node6": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "node7": {
+                "double": {
+                    "trible": {
+                        "leave": 123
+                    }
+                }
+            },
+            "nested": {
+                "node1": "this",
+                "node2": 1.0,
+                "node3": 1,
+                "node4": true,
+                "node5": null,
+                "node6": [
+                    "this",
+                    1.0,
+                    1,
+                    true,
+                    null
+                ],
+                "double": {
+                    "node1": "this",
+                    "node2": 1.0,
+                    "node3": 1,
+                    "node4": true,
+                    "node5": null
+                }
+            },
+            "": {
+                "": {
+                    "": {
+                        "": 123
+                    }
+                }
+            }
+        },
+        "flatten": {
+            "node1": "this",
+            "node2": 1.0,
+            "node3": 1,
+            "node4": true,
+            "node5": null,
+            "node6": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "nested;node1": "this",
+            "nested;node2": 1.0,
+            "nested;node3": 1,
+            "nested;node4": true,
+            "nested;node5": null,
+            "nested;node6": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "nested;double;node1": "this",
+            "nested;double;node2": 1.0,
+            "nested;double;node3": 1,
+            "nested;double;node4": true,
+            "nested;double;node5": null,
+            "node7;double;trible;leave": 123,
+            ";;;": 123
+        }
+    },
+    "nested;node7;node8": {
+        "dict": {
+            "node1": "this",
+            "node2": 1.0,
+            "node3": 1,
+            "node4": true,
+            "node5": null,
+            "node6": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "node7": {
+                "double": {
+                    "trible": {
+                        "leave": 123
+                    }
+                }
+            },
+            "nested": {
+                "node1": "this",
+                "node2": 1.0,
+                "node3": 1,
+                "node4": true,
+                "node5": null,
+                "node6": [
+                    "this",
+                    1.0,
+                    1,
+                    true,
+                    null
+                ],
+                "node7": {
+                    "node9": "something",
+                    "node10": null,
+                    "node11": false,
+                    "node12": [
+                        "this",
+                        1.0,
+                        1,
+                        true,
+                        null
+                    ]
+                },
+                "double": {
+                    "node1": "this",
+                    "node2": 1.0,
+                    "node3": 1,
+                    "node4": true,
+                    "node5": null
+                }
+            },
+            "": {
+                "": {
+                    "": {
+                        "": 123
+                    }
+                }
+            }
+        },
+        "flatten": {
+            "node1": "this",
+            "node2": 1.0,
+            "node3": 1,
+            "node4": true,
+            "node5": null,
+            "node6": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "nested;node1": "this",
+            "nested;node2": 1.0,
+            "nested;node3": 1,
+            "nested;node4": true,
+            "nested;node5": null,
+            "nested;node6": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "nested;node7;node9": "something",
+            "nested;node7;node10": null,
+            "nested;node7;node11": false,
+            "nested;node7;node12": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "nested;double;node1": "this",
+            "nested;double;node2": 1.0,
+            "nested;double;node3": 1,
+            "nested;double;node4": true,
+            "nested;double;node5": null,
+            "node7;double;trible;leave": 123,
+            ";;;": 123
+        }
+    },
+    "nested;node7;node9": {
+        "dict": {
+            "node1": "this",
+            "node2": 1.0,
+            "node3": 1,
+            "node4": true,
+            "node5": null,
+            "node6": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "node7": {
+                "double": {
+                    "trible": {
+                        "leave": 123
+                    }
+                }
+            },
+            "nested": {
+                "node1": "this",
+                "node2": 1.0,
+                "node3": 1,
+                "node4": true,
+                "node5": null,
+                "node6": [
+                    "this",
+                    1.0,
+                    1,
+                    true,
+                    null
+                ],
+                "node7": {
+                    "node8": 123.0,
+                    "node10": null,
+                    "node11": false,
+                    "node12": [
+                        "this",
+                        1.0,
+                        1,
+                        true,
+                        null
+                    ]
+                },
+                "double": {
+                    "node1": "this",
+                    "node2": 1.0,
+                    "node3": 1,
+                    "node4": true,
+                    "node5": null
+                }
+            },
+            "": {
+                "": {
+                    "": {
+                        "": 123
+                    }
+                }
+            }
+        },
+        "flatten": {
+            "node1": "this",
+            "node2": 1.0,
+            "node3": 1,
+            "node4": true,
+            "node5": null,
+            "node6": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "nested;node1": "this",
+            "nested;node2": 1.0,
+            "nested;node3": 1,
+            "nested;node4": true,
+            "nested;node5": null,
+            "nested;node6": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "nested;node7;node8": 123.0,
+            "nested;node7;node10": null,
+            "nested;node7;node11": false,
+            "nested;node7;node12": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "nested;double;node1": "this",
+            "nested;double;node2": 1.0,
+            "nested;double;node3": 1,
+            "nested;double;node4": true,
+            "nested;double;node5": null,
+            "node7;double;trible;leave": 123,
+            ";;;": 123
+        }
+    },
+    "nested;node7;node10": {
+        "dict": {
+            "node1": "this",
+            "node2": 1.0,
+            "node3": 1,
+            "node4": true,
+            "node5": null,
+            "node6": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "node7": {
+                "double": {
+                    "trible": {
+                        "leave": 123
+                    }
+                }
+            },
+            "nested": {
+                "node1": "this",
+                "node2": 1.0,
+                "node3": 1,
+                "node4": true,
+                "node5": null,
+                "node6": [
+                    "this",
+                    1.0,
+                    1,
+                    true,
+                    null
+                ],
+                "node7": {
+                    "node8": 123.0,
+                    "node9": "something",
+                    "node11": false,
+                    "node12": [
+                        "this",
+                        1.0,
+                        1,
+                        true,
+                        null
+                    ]
+                },
+                "double": {
+                    "node1": "this",
+                    "node2": 1.0,
+                    "node3": 1,
+                    "node4": true,
+                    "node5": null
+                }
+            },
+            "": {
+                "": {
+                    "": {
+                        "": 123
+                    }
+                }
+            }
+        },
+        "flatten": {
+            "node1": "this",
+            "node2": 1.0,
+            "node3": 1,
+            "node4": true,
+            "node5": null,
+            "node6": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "nested;node1": "this",
+            "nested;node2": 1.0,
+            "nested;node3": 1,
+            "nested;node4": true,
+            "nested;node5": null,
+            "nested;node6": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "nested;node7;node8": 123.0,
+            "nested;node7;node9": "something",
+            "nested;node7;node11": false,
+            "nested;node7;node12": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "nested;double;node1": "this",
+            "nested;double;node2": 1.0,
+            "nested;double;node3": 1,
+            "nested;double;node4": true,
+            "nested;double;node5": null,
+            "node7;double;trible;leave": 123,
+            ";;;": 123
+        }
+    },
+    "nested;node7;node11": {
+        "dict": {
+            "node1": "this",
+            "node2": 1.0,
+            "node3": 1,
+            "node4": true,
+            "node5": null,
+            "node6": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "node7": {
+                "double": {
+                    "trible": {
+                        "leave": 123
+                    }
+                }
+            },
+            "nested": {
+                "node1": "this",
+                "node2": 1.0,
+                "node3": 1,
+                "node4": true,
+                "node5": null,
+                "node6": [
+                    "this",
+                    1.0,
+                    1,
+                    true,
+                    null
+                ],
+                "node7": {
+                    "node8": 123.0,
+                    "node9": "something",
+                    "node10": null,
+                    "node12": [
+                        "this",
+                        1.0,
+                        1,
+                        true,
+                        null
+                    ]
+                },
+                "double": {
+                    "node1": "this",
+                    "node2": 1.0,
+                    "node3": 1,
+                    "node4": true,
+                    "node5": null
+                }
+            },
+            "": {
+                "": {
+                    "": {
+                        "": 123
+                    }
+                }
+            }
+        },
+        "flatten": {
+            "node1": "this",
+            "node2": 1.0,
+            "node3": 1,
+            "node4": true,
+            "node5": null,
+            "node6": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "nested;node1": "this",
+            "nested;node2": 1.0,
+            "nested;node3": 1,
+            "nested;node4": true,
+            "nested;node5": null,
+            "nested;node6": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "nested;node7;node8": 123.0,
+            "nested;node7;node9": "something",
+            "nested;node7;node10": null,
+            "nested;node7;node12": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "nested;double;node1": "this",
+            "nested;double;node2": 1.0,
+            "nested;double;node3": 1,
+            "nested;double;node4": true,
+            "nested;double;node5": null,
+            "node7;double;trible;leave": 123,
+            ";;;": 123
+        }
+    },
+    "nested;node7;node12": {
+        "dict": {
+            "node1": "this",
+            "node2": 1.0,
+            "node3": 1,
+            "node4": true,
+            "node5": null,
+            "node6": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "node7": {
+                "double": {
+                    "trible": {
+                        "leave": 123
+                    }
+                }
+            },
+            "nested": {
+                "node1": "this",
+                "node2": 1.0,
+                "node3": 1,
+                "node4": true,
+                "node5": null,
+                "node6": [
+                    "this",
+                    1.0,
+                    1,
+                    true,
+                    null
+                ],
+                "node7": {
+                    "node8": 123.0,
+                    "node9": "something",
+                    "node10": null,
+                    "node11": false
+                },
+                "double": {
+                    "node1": "this",
+                    "node2": 1.0,
+                    "node3": 1,
+                    "node4": true,
+                    "node5": null
+                }
+            },
+            "": {
+                "": {
+                    "": {
+                        "": 123
+                    }
+                }
+            }
+        },
+        "flatten": {
+            "node1": "this",
+            "node2": 1.0,
+            "node3": 1,
+            "node4": true,
+            "node5": null,
+            "node6": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "nested;node1": "this",
+            "nested;node2": 1.0,
+            "nested;node3": 1,
+            "nested;node4": true,
+            "nested;node5": null,
+            "nested;node6": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "nested;node7;node8": 123.0,
+            "nested;node7;node9": "something",
+            "nested;node7;node10": null,
+            "nested;node7;node11": false,
+            "nested;double;node1": "this",
+            "nested;double;node2": 1.0,
+            "nested;double;node3": 1,
+            "nested;double;node4": true,
+            "nested;double;node5": null,
+            "node7;double;trible;leave": 123,
+            ";;;": 123
+        }
+    },
+    "nested;double": {
+        "dict": {
+            "node1": "this",
+            "node2": 1.0,
+            "node3": 1,
+            "node4": true,
+            "node5": null,
+            "node6": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "node7": {
+                "double": {
+                    "trible": {
+                        "leave": 123
+                    }
+                }
+            },
+            "nested": {
+                "node1": "this",
+                "node2": 1.0,
+                "node3": 1,
+                "node4": true,
+                "node5": null,
+                "node6": [
+                    "this",
+                    1.0,
+                    1,
+                    true,
+                    null
+                ],
+                "node7": {
+                    "node8": 123.0,
+                    "node9": "something",
+                    "node10": null,
+                    "node11": false,
+                    "node12": [
+                        "this",
+                        1.0,
+                        1,
+                        true,
+                        null
+                    ]
+                }
+            },
+            "": {
+                "": {
+                    "": {
+                        "": 123
+                    }
+                }
+            }
+        },
+        "flatten": {
+            "node1": "this",
+            "node2": 1.0,
+            "node3": 1,
+            "node4": true,
+            "node5": null,
+            "node6": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "nested;node1": "this",
+            "nested;node2": 1.0,
+            "nested;node3": 1,
+            "nested;node4": true,
+            "nested;node5": null,
+            "nested;node6": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "nested;node7;node8": 123.0,
+            "nested;node7;node9": "something",
+            "nested;node7;node10": null,
+            "nested;node7;node11": false,
+            "nested;node7;node12": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "node7;double;trible;leave": 123,
+            ";;;": 123
+        }
+    },
+    "nested;double;node1": {
+        "dict": {
+            "node1": "this",
+            "node2": 1.0,
+            "node3": 1,
+            "node4": true,
+            "node5": null,
+            "node6": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "node7": {
+                "double": {
+                    "trible": {
+                        "leave": 123
+                    }
+                }
+            },
+            "nested": {
+                "node1": "this",
+                "node2": 1.0,
+                "node3": 1,
+                "node4": true,
+                "node5": null,
+                "node6": [
+                    "this",
+                    1.0,
+                    1,
+                    true,
+                    null
+                ],
+                "node7": {
+                    "node8": 123.0,
+                    "node9": "something",
+                    "node10": null,
+                    "node11": false,
+                    "node12": [
+                        "this",
+                        1.0,
+                        1,
+                        true,
+                        null
+                    ]
+                },
+                "double": {
+                    "node2": 1.0,
+                    "node3": 1,
+                    "node4": true,
+                    "node5": null
+                }
+            },
+            "": {
+                "": {
+                    "": {
+                        "": 123
+                    }
+                }
+            }
+        },
+        "flatten": {
+            "node1": "this",
+            "node2": 1.0,
+            "node3": 1,
+            "node4": true,
+            "node5": null,
+            "node6": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "nested;node1": "this",
+            "nested;node2": 1.0,
+            "nested;node3": 1,
+            "nested;node4": true,
+            "nested;node5": null,
+            "nested;node6": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "nested;node7;node8": 123.0,
+            "nested;node7;node9": "something",
+            "nested;node7;node10": null,
+            "nested;node7;node11": false,
+            "nested;node7;node12": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "nested;double;node2": 1.0,
+            "nested;double;node3": 1,
+            "nested;double;node4": true,
+            "nested;double;node5": null,
+            "node7;double;trible;leave": 123,
+            ";;;": 123
+        }
+    },
+    "nested;double;node2": {
+        "dict": {
+            "node1": "this",
+            "node2": 1.0,
+            "node3": 1,
+            "node4": true,
+            "node5": null,
+            "node6": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "node7": {
+                "double": {
+                    "trible": {
+                        "leave": 123
+                    }
+                }
+            },
+            "nested": {
+                "node1": "this",
+                "node2": 1.0,
+                "node3": 1,
+                "node4": true,
+                "node5": null,
+                "node6": [
+                    "this",
+                    1.0,
+                    1,
+                    true,
+                    null
+                ],
+                "node7": {
+                    "node8": 123.0,
+                    "node9": "something",
+                    "node10": null,
+                    "node11": false,
+                    "node12": [
+                        "this",
+                        1.0,
+                        1,
+                        true,
+                        null
+                    ]
+                },
+                "double": {
+                    "node1": "this",
+                    "node3": 1,
+                    "node4": true,
+                    "node5": null
+                }
+            },
+            "": {
+                "": {
+                    "": {
+                        "": 123
+                    }
+                }
+            }
+        },
+        "flatten": {
+            "node1": "this",
+            "node2": 1.0,
+            "node3": 1,
+            "node4": true,
+            "node5": null,
+            "node6": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "nested;node1": "this",
+            "nested;node2": 1.0,
+            "nested;node3": 1,
+            "nested;node4": true,
+            "nested;node5": null,
+            "nested;node6": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "nested;node7;node8": 123.0,
+            "nested;node7;node9": "something",
+            "nested;node7;node10": null,
+            "nested;node7;node11": false,
+            "nested;node7;node12": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "nested;double;node1": "this",
+            "nested;double;node3": 1,
+            "nested;double;node4": true,
+            "nested;double;node5": null,
+            "node7;double;trible;leave": 123,
+            ";;;": 123
+        }
+    },
+    "nested;double;node3": {
+        "dict": {
+            "node1": "this",
+            "node2": 1.0,
+            "node3": 1,
+            "node4": true,
+            "node5": null,
+            "node6": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "node7": {
+                "double": {
+                    "trible": {
+                        "leave": 123
+                    }
+                }
+            },
+            "nested": {
+                "node1": "this",
+                "node2": 1.0,
+                "node3": 1,
+                "node4": true,
+                "node5": null,
+                "node6": [
+                    "this",
+                    1.0,
+                    1,
+                    true,
+                    null
+                ],
+                "node7": {
+                    "node8": 123.0,
+                    "node9": "something",
+                    "node10": null,
+                    "node11": false,
+                    "node12": [
+                        "this",
+                        1.0,
+                        1,
+                        true,
+                        null
+                    ]
+                },
+                "double": {
+                    "node1": "this",
+                    "node2": 1.0,
+                    "node4": true,
+                    "node5": null
+                }
+            },
+            "": {
+                "": {
+                    "": {
+                        "": 123
+                    }
+                }
+            }
+        },
+        "flatten": {
+            "node1": "this",
+            "node2": 1.0,
+            "node3": 1,
+            "node4": true,
+            "node5": null,
+            "node6": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "nested;node1": "this",
+            "nested;node2": 1.0,
+            "nested;node3": 1,
+            "nested;node4": true,
+            "nested;node5": null,
+            "nested;node6": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "nested;node7;node8": 123.0,
+            "nested;node7;node9": "something",
+            "nested;node7;node10": null,
+            "nested;node7;node11": false,
+            "nested;node7;node12": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "nested;double;node1": "this",
+            "nested;double;node2": 1.0,
+            "nested;double;node4": true,
+            "nested;double;node5": null,
+            "node7;double;trible;leave": 123,
+            ";;;": 123
+        }
+    },
+    "nested;double;node4": {
+        "dict": {
+            "node1": "this",
+            "node2": 1.0,
+            "node3": 1,
+            "node4": true,
+            "node5": null,
+            "node6": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "node7": {
+                "double": {
+                    "trible": {
+                        "leave": 123
+                    }
+                }
+            },
+            "nested": {
+                "node1": "this",
+                "node2": 1.0,
+                "node3": 1,
+                "node4": true,
+                "node5": null,
+                "node6": [
+                    "this",
+                    1.0,
+                    1,
+                    true,
+                    null
+                ],
+                "node7": {
+                    "node8": 123.0,
+                    "node9": "something",
+                    "node10": null,
+                    "node11": false,
+                    "node12": [
+                        "this",
+                        1.0,
+                        1,
+                        true,
+                        null
+                    ]
+                },
+                "double": {
+                    "node1": "this",
+                    "node2": 1.0,
+                    "node3": 1,
+                    "node5": null
+                }
+            },
+            "": {
+                "": {
+                    "": {
+                        "": 123
+                    }
+                }
+            }
+        },
+        "flatten": {
+            "node1": "this",
+            "node2": 1.0,
+            "node3": 1,
+            "node4": true,
+            "node5": null,
+            "node6": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "nested;node1": "this",
+            "nested;node2": 1.0,
+            "nested;node3": 1,
+            "nested;node4": true,
+            "nested;node5": null,
+            "nested;node6": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "nested;node7;node8": 123.0,
+            "nested;node7;node9": "something",
+            "nested;node7;node10": null,
+            "nested;node7;node11": false,
+            "nested;node7;node12": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "nested;double;node1": "this",
+            "nested;double;node2": 1.0,
+            "nested;double;node3": 1,
+            "nested;double;node5": null,
+            "node7;double;trible;leave": 123,
+            ";;;": 123
+        }
+    },
+    "nested;double;node5": {
+        "dict": {
+            "node1": "this",
+            "node2": 1.0,
+            "node3": 1,
+            "node4": true,
+            "node5": null,
+            "node6": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "node7": {
+                "double": {
+                    "trible": {
+                        "leave": 123
+                    }
+                }
+            },
+            "nested": {
+                "node1": "this",
+                "node2": 1.0,
+                "node3": 1,
+                "node4": true,
+                "node5": null,
+                "node6": [
+                    "this",
+                    1.0,
+                    1,
+                    true,
+                    null
+                ],
+                "node7": {
+                    "node8": 123.0,
+                    "node9": "something",
+                    "node10": null,
+                    "node11": false,
+                    "node12": [
+                        "this",
+                        1.0,
+                        1,
+                        true,
+                        null
+                    ]
+                },
+                "double": {
+                    "node1": "this",
+                    "node2": 1.0,
+                    "node3": 1,
+                    "node4": true
+                }
+            },
+            "": {
+                "": {
+                    "": {
+                        "": 123
+                    }
+                }
+            }
+        },
+        "flatten": {
+            "node1": "this",
+            "node2": 1.0,
+            "node3": 1,
+            "node4": true,
+            "node5": null,
+            "node6": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "nested;node1": "this",
+            "nested;node2": 1.0,
+            "nested;node3": 1,
+            "nested;node4": true,
+            "nested;node5": null,
+            "nested;node6": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "nested;node7;node8": 123.0,
+            "nested;node7;node9": "something",
+            "nested;node7;node10": null,
+            "nested;node7;node11": false,
+            "nested;node7;node12": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "nested;double;node1": "this",
+            "nested;double;node2": 1.0,
+            "nested;double;node3": 1,
+            "nested;double;node4": true,
+            "node7;double;trible;leave": 123,
+            ";;;": 123
+        }
+    },
+    "": {
+        "dict": {
+            "node1": "this",
+            "node2": 1.0,
+            "node3": 1,
+            "node4": true,
+            "node5": null,
+            "node6": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "node7": {
+                "double": {
+                    "trible": {
+                        "leave": 123
+                    }
+                }
+            },
+            "nested": {
+                "node1": "this",
+                "node2": 1.0,
+                "node3": 1,
+                "node4": true,
+                "node5": null,
+                "node6": [
+                    "this",
+                    1.0,
+                    1,
+                    true,
+                    null
+                ],
+                "node7": {
+                    "node8": 123.0,
+                    "node9": "something",
+                    "node10": null,
+                    "node11": false,
+                    "node12": [
+                        "this",
+                        1.0,
+                        1,
+                        true,
+                        null
+                    ]
+                },
+                "double": {
+                    "node1": "this",
+                    "node2": 1.0,
+                    "node3": 1,
+                    "node4": true,
+                    "node5": null
+                }
+            }
+        },
+        "flatten": {
+            "node1": "this",
+            "node2": 1.0,
+            "node3": 1,
+            "node4": true,
+            "node5": null,
+            "node6": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "nested;node1": "this",
+            "nested;node2": 1.0,
+            "nested;node3": 1,
+            "nested;node4": true,
+            "nested;node5": null,
+            "nested;node6": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "nested;node7;node8": 123.0,
+            "nested;node7;node9": "something",
+            "nested;node7;node10": null,
+            "nested;node7;node11": false,
+            "nested;node7;node12": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "nested;double;node1": "this",
+            "nested;double;node2": 1.0,
+            "nested;double;node3": 1,
+            "nested;double;node4": true,
+            "nested;double;node5": null,
+            "node7;double;trible;leave": 123
+        }
+    },
+    ";": {
+        "dict": {
+            "node1": "this",
+            "node2": 1.0,
+            "node3": 1,
+            "node4": true,
+            "node5": null,
+            "node6": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "node7": {
+                "double": {
+                    "trible": {
+                        "leave": 123
+                    }
+                }
+            },
+            "nested": {
+                "node1": "this",
+                "node2": 1.0,
+                "node3": 1,
+                "node4": true,
+                "node5": null,
+                "node6": [
+                    "this",
+                    1.0,
+                    1,
+                    true,
+                    null
+                ],
+                "node7": {
+                    "node8": 123.0,
+                    "node9": "something",
+                    "node10": null,
+                    "node11": false,
+                    "node12": [
+                        "this",
+                        1.0,
+                        1,
+                        true,
+                        null
+                    ]
+                },
+                "double": {
+                    "node1": "this",
+                    "node2": 1.0,
+                    "node3": 1,
+                    "node4": true,
+                    "node5": null
+                }
+            },
+            "": {}
+        },
+        "flatten": {
+            "node1": "this",
+            "node2": 1.0,
+            "node3": 1,
+            "node4": true,
+            "node5": null,
+            "node6": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "nested;node1": "this",
+            "nested;node2": 1.0,
+            "nested;node3": 1,
+            "nested;node4": true,
+            "nested;node5": null,
+            "nested;node6": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "nested;node7;node8": 123.0,
+            "nested;node7;node9": "something",
+            "nested;node7;node10": null,
+            "nested;node7;node11": false,
+            "nested;node7;node12": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "nested;double;node1": "this",
+            "nested;double;node2": 1.0,
+            "nested;double;node3": 1,
+            "nested;double;node4": true,
+            "nested;double;node5": null,
+            "node7;double;trible;leave": 123,
+            "": {}
+        }
+    },
+    ";;": {
+        "dict": {
+            "node1": "this",
+            "node2": 1.0,
+            "node3": 1,
+            "node4": true,
+            "node5": null,
+            "node6": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "node7": {
+                "double": {
+                    "trible": {
+                        "leave": 123
+                    }
+                }
+            },
+            "nested": {
+                "node1": "this",
+                "node2": 1.0,
+                "node3": 1,
+                "node4": true,
+                "node5": null,
+                "node6": [
+                    "this",
+                    1.0,
+                    1,
+                    true,
+                    null
+                ],
+                "node7": {
+                    "node8": 123.0,
+                    "node9": "something",
+                    "node10": null,
+                    "node11": false,
+                    "node12": [
+                        "this",
+                        1.0,
+                        1,
+                        true,
+                        null
+                    ]
+                },
+                "double": {
+                    "node1": "this",
+                    "node2": 1.0,
+                    "node3": 1,
+                    "node4": true,
+                    "node5": null
+                }
+            },
+            "": {
+                "": {}
+            }
+        },
+        "flatten": {
+            "node1": "this",
+            "node2": 1.0,
+            "node3": 1,
+            "node4": true,
+            "node5": null,
+            "node6": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "nested;node1": "this",
+            "nested;node2": 1.0,
+            "nested;node3": 1,
+            "nested;node4": true,
+            "nested;node5": null,
+            "nested;node6": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "nested;node7;node8": 123.0,
+            "nested;node7;node9": "something",
+            "nested;node7;node10": null,
+            "nested;node7;node11": false,
+            "nested;node7;node12": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "nested;double;node1": "this",
+            "nested;double;node2": 1.0,
+            "nested;double;node3": 1,
+            "nested;double;node4": true,
+            "nested;double;node5": null,
+            "node7;double;trible;leave": 123,
+            ";": {}
+        }
+    },
+    ";;;": {
+        "dict": {
+            "node1": "this",
+            "node2": 1.0,
+            "node3": 1,
+            "node4": true,
+            "node5": null,
+            "node6": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "node7": {
+                "double": {
+                    "trible": {
+                        "leave": 123
+                    }
+                }
+            },
+            "nested": {
+                "node1": "this",
+                "node2": 1.0,
+                "node3": 1,
+                "node4": true,
+                "node5": null,
+                "node6": [
+                    "this",
+                    1.0,
+                    1,
+                    true,
+                    null
+                ],
+                "node7": {
+                    "node8": 123.0,
+                    "node9": "something",
+                    "node10": null,
+                    "node11": false,
+                    "node12": [
+                        "this",
+                        1.0,
+                        1,
+                        true,
+                        null
+                    ]
+                },
+                "double": {
+                    "node1": "this",
+                    "node2": 1.0,
+                    "node3": 1,
+                    "node4": true,
+                    "node5": null
+                }
+            },
+            "": {
+                "": {
+                    "": {}
+                }
+            }
+        },
+        "flatten": {
+            "node1": "this",
+            "node2": 1.0,
+            "node3": 1,
+            "node4": true,
+            "node5": null,
+            "node6": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "nested;node1": "this",
+            "nested;node2": 1.0,
+            "nested;node3": 1,
+            "nested;node4": true,
+            "nested;node5": null,
+            "nested;node6": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "nested;node7;node8": 123.0,
+            "nested;node7;node9": "something",
+            "nested;node7;node10": null,
+            "nested;node7;node11": false,
+            "nested;node7;node12": [
+                "this",
+                1.0,
+                1,
+                true,
+                null
+            ],
+            "nested;double;node1": "this",
+            "nested;double;node2": 1.0,
+            "nested;double;node3": 1,
+            "nested;double;node4": true,
+            "nested;double;node5": null,
+            "node7;double;trible;leave": 123,
+            ";;": {}
+        }
+    }
+}
