@@ -18,7 +18,7 @@ def in_or_callable(d: Union[ndict, dict], k: Union[str, Callable]) -> bool:
 
 # TODO: depth change to max_depth.
 # TODO: add comments.
-# TODO: options to prevent changing earlier values.
+# TODO: Change keys, values and items to generators.
 class ndict:
     """Nested dictionary.
 
@@ -35,15 +35,13 @@ class ndict:
     def __init__(self, d: Optional[Union[ndict, dict]] = None, delimiter: str = ";") -> None:
         assert isinstance(delimiter, str), f"delimiter must be str, but recieved {type(delimiter)}"
 
-        if isinstance(d, ndict):
-            self.load_state_dict(d.state_dict())
-            self.delimiter = delimiter
-            return
-
         self._delimiter = delimiter
         self._d = {}
         self._flatten_dict = {}
-        if isinstance(d, dict):
+
+        if isinstance(d, ndict):
+            self.load_state_dict(d.state_dict())
+        elif isinstance(d, dict):
             for k, v in d.items():
                 self[k] = v
         else:
@@ -51,14 +49,17 @@ class ndict:
 
     @property
     def dict(self) -> dict:
+        """Underling dictionary. Do not change it!"""
         return self._d
 
     @property
     def flatten_dict(self) -> dict[str, Any]:
+        """Flattened dictionary of {path: value} pairs."""
         return self._flatten_dict
 
     @property
     def paths(self) -> list[str]:
+        """Get all possible paths."""
         def _path_action(tree: dict, res: list, node: Any, path: str, depth: int) -> None:
             if path is not None:
                 res.append(path)
@@ -79,13 +80,16 @@ class ndict:
         self._delimiter = delimiter
 
     def state_dict(self) -> dict:
-        return {"dict": self._d, "flatten_dict": self._flatten_dict}
+        return {"dict": self.dict, "flatten_dict": self.flatten_dict, "delimiter": self.delimiter}
 
     def load_state_dict(self, states: dict) -> ndict:
+        """The delimiter is only for properly initialize the object."""
         assert isinstance(states["delimiter"], str), f"Unexpected delimiter type: {states['delimiter']}."
+        delimiter = self.delimiter
         self._d = states["dict"]
         self._flatten_dict = states["flatten_dict"]
         self._delimiter = states["delimiter"]
+        self.delimiter = delimiter
         return self
 
     def get(
@@ -97,8 +101,20 @@ class ndict:
         """Get values from the nested dictionary.
 
         Args:
-            keys. Callables should accept tree: ndict, path: str 2 arguments.
+            path (Optional[str] = None):
+            keys (Optional[list[Union[str, tuple[str, Callable]]]] = None). Callables should accept self (ndict), 
+                path: str 2 arguments.
         """
+        def _get_value_or_default(key: Union[str, Callable], default: Any, path: Optional[str] = None) -> Any:
+            if isinstance(key, str):
+                return self[key] if key in self else default
+
+            assert isinstance(key, Callable), f"Unexpected key type: {key}."
+            try:
+                return key(self, path)
+            except:
+                return default
+
         if keys is None:
             assert path is not None, "Must provide path or keys!"
             return self[path] if path in self else default
@@ -108,15 +124,14 @@ class ndict:
             keys.append(path)
 
         return {
-            **{k: self._get_value_or_default(k, default) for k in keys if isinstance(k, str)},
+            **{k: _get_value_or_default(k, default) for k in keys if isinstance(k, str)},
             **{
-                k[0]: self._get_value_or_default(k[1], default, path=k[0])
+                k[0]: _get_value_or_default(k[1], default, path=k[0])
                 for k in keys
                 if isinstance(k, tuple)
             },
         }
 
-    # TODO: A more efficient implementation.
     def update(
         self, d: Union[dict, ndict], ignore_none: bool = True, ignore_missing: bool = False
     ) -> None:
@@ -130,7 +145,6 @@ class ndict:
                 continue
             self[p] = v(self, p) if isinstance(v, Callable) else v
 
-    # TODO: Generator for keys.
     def keys(self, depth: int = -1) -> list[str]:
         def _keys_action(tree: dict, res: list[str], node: Any, path: str, depth: int):
             res.append(path)
@@ -139,7 +153,6 @@ class ndict:
         traverse(tree=self.dict, res=res, actions=_keys_action, depth=depth)
         return res
 
-    # TODO: Generator for values.
     def values(self, depth: int = -1) -> list[Any]:
         def _values_action(tree: dict, res: list[str], node: Any, path: str, depth: int):
             res.append(node)
@@ -148,7 +161,6 @@ class ndict:
         traverse(tree=self.dict, res=res, actions=_values_action, depth=depth)
         return res
 
-    # TODO: Generator for items.
     def items(self, depth: int = -1) -> list[tuple[str, Any]]:
         def _items_action(
             tree: dict, res: list[tuple[str, Any]], node: Any, path: str, depth: int
@@ -324,7 +336,7 @@ class ndict:
         v = reduce(getitem, path_list, self._d)
 
         if isinstance(v, dict) and dict_as_ndict:
-            flatten_dict = {p.replace(f"{path}{self.delimiter}", ""): v for p, v in self.flatten_dict if p.startswith(path)}
+            flatten_dict = {p.replace(f"{path}{self.delimiter}", ""): v for p, v in self.flatten_dict.items() if p.startswith(path)}
             states = {"dict": v, "flatten_dict": flatten_dict, "delimiter": self.delimiter}
             return self.__class__(delimiter=self.delimiter).load_state_dict(states)
         else:
@@ -338,17 +350,6 @@ class ndict:
         res = {}
         traverse(self.dict, res, flatten_action)
         return res
-
-    # TODO: Maybe only catch KeyError exception.
-    def _get_value_or_default(self, key: Union[str, Callable], default: Any, **kwargs) -> Any:
-        if isinstance(key, str):
-            return self[key] if key in self else default
-        assert isinstance(key, Callable), f"Unexpected key type: {key}."
-
-        try:
-            return key(self, **kwargs)
-        except:
-            return default
 
     # TODO: A more efficient way to get the compare keys.
     def _get_compare_keys(

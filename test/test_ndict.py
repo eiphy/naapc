@@ -86,4 +86,4 @@ def test_delitem():
     assert d.flatten_dict == {}
 
 if __name__ == "__main__":
-    test_delitem()
+    test_getitem()
