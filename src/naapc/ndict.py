@@ -114,20 +114,20 @@ class ndict:
                 return key(self, path)
             except:
                 return default
+        
+        assert (path is not None or keys is not None) and not (path is not None and keys is not None), f"Users can only provide path or keys: path: {path is not None}, keys: {keys is not None}."
 
-        if keys is None:
-            assert path is not None, "Must provide path or keys!"
-            return self[path] if path in self else default
-
-        keys = keys or []
         if path is not None:
-            keys.append(path)
+            try:
+                return self[path]
+            except KeyError:
+                return default
 
         return {
-            **{k: _get_value_or_default(k, default) for k in keys if isinstance(k, str)},
+            **{k: _get_value_or_default(k, default) for k in keys if isinstance(k, str)},   # type: ignore
             **{
                 k[0]: _get_value_or_default(k[1], default, path=k[0])
-                for k in keys
+                for k in keys   # type: ignore
                 if isinstance(k, tuple)
             },
         }

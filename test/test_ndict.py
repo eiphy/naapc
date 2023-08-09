@@ -33,6 +33,11 @@ def test_init():
     assert d1.dict is d.dict
     assert d1.flatten_dict is d.flatten_dict
 
+    d2 = ndict(flatten)
+    assert d2.dict == nested, get_dict_compare_msg(d2.dict, nested, indent=4, sort_keys=False)
+    assert d2.flatten_dict == flatten, get_dict_compare_msg(
+        d2.flatten_dict, flatten, indent=4, sort_keys=False
+    )
 
 def test_paths():
     with open(ROOT / "test/init.json", "r") as f:
@@ -42,6 +47,62 @@ def test_paths():
         paths = json.load(f)
     assert d.paths == paths
 
+def test_set_delimiter():
+    with open(ROOT / "test/init.json", "r") as f:
+        raw = json.load(f)
+    with open(ROOT / "test/init_nested.json", "r") as f:
+        nested = json.load(f)
+    with open(ROOT / "test/delimiter_flatten.json", "r") as f:
+        flatten = json.load(f)
+    d = ndict(raw)
+    d.delimiter = "."
+    assert d.dict == nested, get_dict_compare_msg(d.dict, nested, indent=4, sort_keys=False)
+    assert d.flatten_dict == flatten, get_dict_compare_msg(
+        d.flatten_dict, flatten, indent=4, sort_keys=False
+    )
+
+    d1 = ndict(d)
+    with open(ROOT / "test/init_flatten.json", "r") as f:
+        flatten = json.load(f)
+    assert d1.dict == nested, get_dict_compare_msg(d1.dict, nested, indent=4, sort_keys=False)
+    assert d1.flatten_dict == flatten, get_dict_compare_msg(
+        d1.flatten_dict, flatten, indent=4, sort_keys=False
+    )
+
+def test_states():
+    with open(ROOT / "test/init.json", "r") as f:
+        d = ndict(json.load(f))
+    d.delimiter = "+"
+    states = d.state_dict()
+    d1 = ndict().load_state_dict(states)
+    with open(ROOT / "test/init_flatten.json", "r") as f:
+        flatten = json.load(f)
+    with open(ROOT / "test/init_nested.json", "r") as f:
+        nested = json.load(f)
+    assert d1.dict == nested, get_dict_compare_msg(d1.dict, nested, indent=4, sort_keys=False)
+    assert d1.flatten_dict == flatten, get_dict_compare_msg(
+        d1.flatten_dict, flatten, indent=4, sort_keys=False
+    )
+
+def test_get():
+    with open(ROOT / "test/init.json", "r") as f:
+        d = ndict(json.load(f))
+    with open(ROOT / "test/init_getitem.json", "r") as f:
+        getitem_gt = json.load(f)
+
+    for p, gt in getitem_gt.items():
+        v = d.get(path=p)
+        if isinstance(gt, dict):
+            assert isinstance(v, ndict)
+            v = v.dict
+        assert v == gt
+    
+    assert d.get("not_exist_path") is None
+    assert d.get("not_exist_path", default=1)  == 1
+    assert d.get("not_exist_path;not_exist_path", default=1)  == 1
+    assert d.get("not_exist_path;not_exist_path")  is None
+
+    assert d.get(keys=["node1", "node2", ("node2", lambda tree, path: tree[path] + 1)]) == {"node1": "this", "node2": 2.0}
 
 def test_getitem():
     with open(ROOT / "test/init.json", "r") as f:
@@ -86,4 +147,4 @@ def test_delitem():
     assert d.flatten_dict == {}
 
 if __name__ == "__main__":
-    test_getitem()
+    test_get()
