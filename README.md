@@ -68,6 +68,9 @@ nd.diff(nd1)                   # {"task;path": ("cwd", "xcwd"), "task;extra": (N
 
 Check test/test_ndict.py for detailed usage.
 
+## Known Issues
+Assign a list of ndict won't flatten them. Try to avoid using list.
+
 ## Typing
 Add a type
 ```python
