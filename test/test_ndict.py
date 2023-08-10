@@ -154,6 +154,13 @@ def test_get():
             assert isinstance(v, ndict)
             v = v.dict
         assert v == gt
+
+    for p, gt in getitem_gt.items():
+        v = d.get(path=p, dict_as_ndict=False)
+        if isinstance(gt, dict):
+            assert isinstance(v, dict)
+            v = v
+        assert v == gt
     
     assert d.get("not_exist_path") is None
     assert d.get("not_exist_path", default=1)  == 1
@@ -255,6 +262,12 @@ def test_values():
     with open(TEST_ASSET / "values_depth-1.json", "r") as f:
         gt = json.load(f)
     assert d.values(-1) == gt
+    for v, v_gt in zip(d.values(-1, dict_as_ndict=True), gt):
+        if isinstance(v_gt, dict):
+            assert isinstance(v_gt, ndict)
+    for v, v_gt in zip(d.values(-1, dict_as_ndict=False), gt):
+        if isinstance(v_gt, dict):
+            assert isinstance(v_gt, dict)
 
 def test_items():
     with open(TEST_ASSET / "init.json", "r") as f:
@@ -288,6 +301,19 @@ def test_items():
     with open(TEST_ASSET / "values_depth-1.json", "r") as f:
         v_gt = json.load(f)
     for i, (k, v) in enumerate(d.items(-1)):
+        if isinstance(v_gt[i], dict):
+            assert isinstance(v, ndict)
+            assert v.dict is d[k].dict
+        else:
+            assert v is d[k]
+        assert k == k_gt[i]
+        assert v == v_gt[i]
+    for i, (k, v) in enumerate(d.items(-1, dict_as_ndict=True)):
+        if isinstance(v_gt[i], dict):
+            assert isinstance(v, dict)
+            assert v is d[k].dict
+        else:
+            assert v is d[k]
         assert k == k_gt[i]
         assert v == v_gt[i]
 
@@ -367,4 +393,4 @@ def test_contain():
     assert "not exist" not in d
 
 if __name__ == "__main__":
-    test_bool()
+    test_items()

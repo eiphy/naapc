@@ -95,8 +95,9 @@ class ndict:
     def get(
         self,
         path: Optional[str] = None,
-        keys: Optional[list[Union[str, tuple[str, Callable]]]] = None,
         default: Optional[Any] = None,
+        keys: Optional[list[Union[str, tuple[str, Callable]]]] = None,
+        dict_as_ndict: bool = True
     ) -> Union[Any, dict[str, Any]]:
         """Get values from the nested dictionary.
 
@@ -107,9 +108,12 @@ class ndict:
         """
         def _get_value_or_default(key: Union[str, Callable], default: Any, path: Optional[str] = None) -> Any:
             if isinstance(key, str):
-                return self[key] if key in self else default
+                try:
+                    return self._get_node(key, dict_as_ndict=dict_as_ndict)
+                except KeyError:
+                    return default
 
-            assert isinstance(key, Callable), f"Unexpected key type: {key}."
+            assert isinstance(key, Callable), f"Unexpected key type: {type(key)}."
             try:
                 return key(self, path)
             except:
@@ -119,7 +123,7 @@ class ndict:
 
         if path is not None:
             try:
-                return self[path]
+                return self._get_node(path, dict_as_ndict=dict_as_ndict)
             except KeyError:
                 return default
 
@@ -155,21 +159,21 @@ class ndict:
         traverse(tree=self.dict, res=res, actions=_keys_action, depth=max_depth)
         return res
 
-    def values(self, max_depth: int = 1) -> list[Any]:
+    def values(self, max_depth: int = 1, dict_as_ndict: bool = True) -> list[Any]:
         def _values_action(tree: dict, res: list[Any], node: Any, path: str, depth: int):
             if path is not None and (not isinstance(node, dict) or depth == max_depth):
-                res.append(node)
+                res.append(ndict(node) if dict_as_ndict and isinstance(node, dict) else node)
 
         res = []
         traverse(tree=self.dict, res=res, actions=_values_action, depth=max_depth)
         return res
 
-    def items(self, max_depth: int = 1) -> list[tuple[str, Any]]:
+    def items(self, max_depth: int = 1, dict_as_ndict: bool = True) -> list[tuple[str, Any]]:
         def _items_action(
             tree: dict, res: list[tuple[str, Any]], node: Any, path: str, depth: int
         ):
             if path is not None and (not isinstance(node, dict) or depth == max_depth):
-                res.append((path, node))
+                res.append((path, node if dict_as_ndict and isinstance(node, dict) else node))
 
         res = []
         traverse(tree=self.dict, res=res, actions=_items_action, depth=max_depth)
@@ -277,7 +281,7 @@ class ndict:
         return yaml.dump(self.dict, sort_keys=False, indent=2)
 
     def __repr__(self) -> str:
-        return f"<Nested dictionary of {len(self)} leaves.>"
+        return f"<Nested dictionary of {len(self)} leaves.>: {self.dict}"
 
     def _get_node(self, path: Union[str, list[str]], dict_as_ndict: bool) -> Any:
         """Return the value of a particular path.
