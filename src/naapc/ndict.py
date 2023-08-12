@@ -25,7 +25,7 @@ class ndict:
     Users shouldn't modify the underling data outside of ndict class. Value overwritten is enabled.
 
     Args:
-        d (Optional[Union[ndict, dict]]): If d is a dict, do make sure the path separator is the givein delimiter if 
+        d (Optional[Union[ndict, dict]]): If d is a dict, do make sure the path separator is the givein delimiter if
             path is used as key.
         delimiter (str): Path separator. Can be any string.
     """
@@ -60,6 +60,7 @@ class ndict:
     @property
     def paths(self) -> list[str]:
         """Get all possible paths."""
+
         def _path_action(tree: dict, res: list[str], node: Any, path: str, depth: int):
             if path is not None:
                 res.append(path)
@@ -76,7 +77,9 @@ class ndict:
     def delimiter(self, delimiter: str) -> None:
         if delimiter == self._delimiter:
             return
-        self._flatten_dict = {p.replace(self._delimiter, delimiter): v for p, v in self.flatten_dict.items()}
+        self._flatten_dict = {
+            p.replace(self._delimiter, delimiter): v for p, v in self.flatten_dict.items()
+        }
         self._delimiter = delimiter
 
     def state_dict(self) -> dict:
@@ -84,7 +87,9 @@ class ndict:
 
     def load_state_dict(self, states: Union[dict, ndict]) -> ndict:
         """The delimiter is only for properly initialize the object."""
-        assert isinstance(states["delimiter"], str), f"Unexpected delimiter type: {states['delimiter']}."
+        assert isinstance(
+            states["delimiter"], str
+        ), f"Unexpected delimiter type: {states['delimiter']}."
         delimiter = self.delimiter
         self._d = states["dict"]
         self._flatten_dict = states["flatten_dict"]
@@ -97,16 +102,19 @@ class ndict:
         path: Optional[str] = None,
         default: Optional[Any] = None,
         keys: Optional[list[Union[str, tuple[str, Callable]]]] = None,
-        dict_as_ndict: bool = True
-    ) -> Union[Any, dict[str, Any]]:
+        dict_as_ndict: bool = True,
+    ) -> Any:
         """Get values from the nested dictionary.
 
         Args:
             path (Optional[str] = None):
-            keys (Optional[list[Union[str, tuple[str, Callable]]]] = None). Callables should accept self (ndict), 
+            keys (Optional[list[Union[str, tuple[str, Callable]]]] = None). Callables should accept self (ndict),
                 path: str 2 arguments.
         """
-        def _get_value_or_default(key: Union[str, Callable], default: Any, path: Optional[str] = None) -> Any:
+
+        def _get_value_or_default(
+            key: Union[str, Callable], default: Any, path: Optional[str] = None
+        ) -> Any:
             if isinstance(key, str):
                 try:
                     return self._get_node(key, dict_as_ndict=dict_as_ndict)
@@ -118,8 +126,10 @@ class ndict:
                 return key(self, path)
             except:
                 return default
-        
-        assert (path is not None or keys is not None) and not (path is not None and keys is not None), f"Users can only provide path or keys: path: {path is not None}, keys: {keys is not None}."
+
+        assert (path is not None or keys is not None) and not (
+            path is not None and keys is not None
+        ), f"Users can only provide path or keys: path: {path is not None}, keys: {keys is not None}."
 
         if path is not None:
             try:
@@ -128,16 +138,16 @@ class ndict:
                 return default
 
         return {
-            **{k: _get_value_or_default(k, default) for k in keys if isinstance(k, str)},   # type: ignore
+            **{k: _get_value_or_default(k, default) for k in keys if isinstance(k, str)},  # type: ignore
             **{
                 k[0]: _get_value_or_default(k[1], default, path=k[0])
-                for k in keys   # type: ignore
+                for k in keys  # type: ignore
                 if isinstance(k, tuple)
             },
         }
 
     def update(
-        self, d: Union[dict, ndict], ignore_none: bool = True, ignore_missing: bool = False
+        self, d: Union[dict, ndict], ignore_none: bool = False, ignore_missing: bool = False
     ) -> None:
         """Could be slow at current stage.
 
@@ -151,6 +161,7 @@ class ndict:
 
     def keys(self, max_depth: int = 1) -> list[str]:
         """Return a list of leave and depth <= depth"""
+
         def _keys_action(tree: dict, res: list[str], node: Any, path: str, depth: int):
             if path is not None and (not isinstance(node, dict) or depth == max_depth):
                 res.append(path)
@@ -162,6 +173,14 @@ class ndict:
     def values(self, max_depth: int = 1, dict_as_ndict: bool = True) -> list[Any]:
         def _values_action(tree: dict, res: list[Any], node: Any, path: str, depth: int):
             if path is not None and (not isinstance(node, dict) or depth == max_depth):
+                if dict_as_ndict and isinstance(node, dict):
+                    node = ndict(delimiter=self.delimiter).load_state_dict(
+                        {
+                            "dict": node,
+                            "flatten_dict": self._get_flatten_dict_of_subtree(path),
+                            "delimiter": self.delimiter,
+                        }
+                    )
                 res.append(ndict(node) if dict_as_ndict and isinstance(node, dict) else node)
 
         res = []
@@ -169,20 +188,21 @@ class ndict:
         return res
 
     def items(self, max_depth: int = 1, dict_as_ndict: bool = True) -> list[tuple[str, Any]]:
-        def _items_action(
-            tree: dict, res: list[tuple[str, Any]], node: Any, path: str, depth: int
-        ):
-            if path is not None and (not isinstance(node, dict) or depth == max_depth):
-                res.append((path, node if dict_as_ndict and isinstance(node, dict) else node))
-
-        res = []
-        traverse(tree=self.dict, res=res, actions=_items_action, depth=max_depth)
-        return res
+        return list(
+            zip(
+                self.keys(max_depth=max_depth),
+                self.values(max_depth=max_depth, dict_as_ndict=dict_as_ndict),
+            )
+        )
 
     # May let the users to cumstomize the conditions.
     def size(self, max_depth: int = 1, ignore_none: bool = False) -> int:
         def _size_action(tree: dict, res: list[int], node: Any, path: str, depth: int):
-            if path is not None and (not isinstance(node, dict) or depth == max_depth) and (not ignore_none or ignore_none and node is not None):
+            if (
+                path is not None
+                and (not isinstance(node, dict) or depth == max_depth)
+                and (not ignore_none or ignore_none and node is not None)
+            ):
                 res[0] += 1
 
         res = [0]
@@ -213,9 +233,13 @@ class ndict:
         d = self._get_node(path_list[:-1], dict_as_ndict=False)
         del d[path_list[-1]]
         if path:
-            self._flatten_dict = {p: v for p, v in self._flatten_dict.items() if not p.startswith(path)}
+            self._flatten_dict = {
+                p: v for p, v in self._flatten_dict.items() if not p.startswith(path)
+            }
         else:
-            self._flatten_dict = {p: v for p, v in self._flatten_dict.items() if not p.startswith(";") and p != ""}
+            self._flatten_dict = {
+                p: v for p, v in self._flatten_dict.items() if not p.startswith(";") and p != ""
+            }
         if len(d) == 0:
             if len(path_list) > 1:
                 parent_path = self._delimiter.join(path_list[:-1])
@@ -224,9 +248,9 @@ class ndict:
     # TODO A more efficient approach.
     def __setitem__(self, path: str, value: Any) -> None:
         """Update values of the corresponding path.
-        
+
         Args:
-            path (str): Path can be an existed or non-exist path. If it's existed path and the corresponding values is 
+            path (str): Path can be an existed or non-exist path. If it's existed path and the corresponding values is
                 not a dictionary, then the original value will be overwrittern.
             value (Any): The value for that path.
         """
@@ -300,11 +324,25 @@ class ndict:
         v = reduce(getitem, path_list, self._d)
 
         if isinstance(v, dict) and dict_as_ndict:
-            flatten_dict = {p.replace(f"{path}{self.delimiter}", ""): v for p, v in self.flatten_dict.items() if p.startswith(path)}
+            flatten_dict = {
+                p.replace(f"{path}{self.delimiter}", ""): v
+                for p, v in self.flatten_dict.items()
+                if p.startswith(path)
+            }
             states = {"dict": v, "flatten_dict": flatten_dict, "delimiter": self.delimiter}
             return self.__class__(delimiter=self.delimiter).load_state_dict(states)
         else:
             return v
+
+    def _get_flatten_dict_of_subtree(self, prefix: str) -> dict[str, Any]:
+        prefix = f"{prefix}{self.delimiter}"
+        return deepcopy(
+            {
+                path[len(prefix) :]: value
+                for path, value in self.flatten_dict.items()
+                if path.startswith(prefix) and len(path) >= len(prefix)
+            }
+        )
 
     def _flatten(self) -> dict[str, Any]:
         def flatten_action(tree: dict, res: dict, node: Any, path: str, depth: int) -> None:
