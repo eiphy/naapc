@@ -273,6 +273,13 @@ class ndict:
         ]
         for k in to_be_delete_node:
             del self._flatten_dict[k]
+        parent_path = self.delimiter.join(path_list[:-1])
+        if parent_path in self._flatten_dict:
+            assert (
+                isinstance(self._flatten_dict[parent_path], dict)
+                and not self._flatten_dict[parent_path]
+            )
+            del self._flatten_dict[parent_path]
 
         # Adjust flatten dict.
         if isinstance(value, Union[dict, ndict]):
