@@ -286,6 +286,8 @@ class ndict:
             tmp = ndict(value)
             d[path_list[-1]] = tmp.dict
             if tmp.flatten_dict:
+                if path in self._flatten_dict:
+                    del self._flatten_dict[path]
                 for p, v in tmp.flatten_dict.items():
                     combined_path = self._delimiter.join([path, p])
                     self._flatten_dict[combined_path] = v

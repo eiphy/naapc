@@ -117,6 +117,9 @@ def test_setitem():
     assert d.flatten_dict == {"something": {}}
     d["something;node1"] = 1
     assert "something" not in d.flatten_dict
+    d["something;node2"] = {}
+    d["something;node2"] = {"something_else": 1}
+    assert "something;node2" not in d.flatten_dict
 
 
 def test_bool():
