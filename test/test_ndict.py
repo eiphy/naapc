@@ -92,6 +92,31 @@ def test_delitem():
     assert d.flatten_dict == {}
 
 
+def test_setitem():
+    with open(TEST_ASSET / "init.json", "r") as f:
+        raw = json.load(f)
+    d = ndict(raw)
+    d["not_exist"] = {"something1": {"something2": 1}}
+    assert d["not_exist;something1;something2"] == 1
+    d["not_exist"] = {}
+    assert "not_exist;something1;something2" not in d.flatten_dict
+
+    d = ndict(raw)
+    d["not_exist"] = {"something1": {"something2": 1}}
+    assert d["not_exist;something1;something2"] == 1
+    d["not_exist;something1"] = 1
+    assert "not_exist;something1;something2" not in d.flatten_dict
+
+    d = ndict()
+    d["something"] = {}
+    assert d.dict == {"something": {}}
+    assert d.flatten_dict == {"something": {}}
+
+    d = ndict({"something": {}})
+    assert d.dict == {"something": {}}
+    assert d.flatten_dict == {"something": {}}
+
+
 def test_bool():
     d = ndict()
     assert not d
@@ -452,4 +477,5 @@ def test_contain():
 
 
 if __name__ == "__main__":
-    test_items()
+    # test_update_no_filting()
+    test_setitem()

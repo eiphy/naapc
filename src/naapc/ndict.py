@@ -268,13 +268,22 @@ class ndict:
                 del self.flatten_dict[tmp_p]
             d = d[node]
 
+        to_be_delete_node = [
+            f"{path}{self.delimiter}{k}" for k in self._get_flatten_dict_of_subtree(path).keys()
+        ]
+        for k in to_be_delete_node:
+            del self._flatten_dict[k]
+
         # Adjust flatten dict.
         if isinstance(value, Union[dict, ndict]):
             tmp = ndict(value)
             d[path_list[-1]] = tmp.dict
-            for p, v in tmp.flatten_dict.items():
-                combined_path = self._delimiter.join([path, p])
-                self._flatten_dict[combined_path] = v
+            if tmp.flatten_dict:
+                for p, v in tmp.flatten_dict.items():
+                    combined_path = self._delimiter.join([path, p])
+                    self._flatten_dict[combined_path] = v
+            else:
+                self._flatten_dict[path] = {}
         else:
             d[path_list[-1]] = value
             self._flatten_dict[path] = value
