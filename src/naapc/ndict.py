@@ -85,7 +85,7 @@ class ndict:
     def state_dict(self) -> dict:
         return {"dict": self.dict, "flatten_dict": self.flatten_dict, "delimiter": self.delimiter}
 
-    def load_state_dict(self, states: Union[dict, ndict]) -> ndict:
+    def load_state_dict(self, states: Union[dict, ndict]) -> Any:
         """The delimiter is only for properly initialize the object."""
         assert isinstance(
             states["delimiter"], str
