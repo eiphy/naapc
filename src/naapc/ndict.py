@@ -324,13 +324,12 @@ class ndict:
         v = reduce(getitem, path_list, self._d)
 
         if isinstance(v, dict) and dict_as_ndict:
-            flatten_dict = {
-                p.replace(f"{path}{self.delimiter}", ""): v
-                for p, v in self.flatten_dict.items()
-                if p.startswith(path)
+            states = {
+                "dict": v,
+                "flatten_dict": self._get_flatten_dict_of_subtree(path),
+                "delimiter": self.delimiter,
             }
-            states = {"dict": v, "flatten_dict": flatten_dict, "delimiter": self.delimiter}
-            return self.__class__(delimiter=self.delimiter).load_state_dict(states)
+            return ndict(delimiter=self.delimiter).load_state_dict(states)
         else:
             return v
 
