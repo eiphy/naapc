@@ -2,8 +2,6 @@ from __future__ import annotations
 
 import json
 from copy import deepcopy
-from functools import reduce
-from operator import getitem
 from typing import Any, Callable, Optional, Union
 
 import yaml
@@ -62,18 +60,6 @@ class ndict(NestedBase):
         return self._flatten_dict
 
     @property
-    def paths(self) -> list[str]:
-        """Get all possible paths."""
-
-        def _path_action(tree: dict, res: list[str], node: Any, path: str, depth: int):
-            if path is not None:
-                res.append(path)
-
-        res = []
-        traverse(tree=self.dict, res=res, actions=_path_action)
-        return res
-
-    @property
     def delimiter(self) -> str:
         return self._delimiter
 
@@ -105,55 +91,6 @@ class ndict(NestedBase):
             self._flatten_dict = tmp.flatten_dict
         return self
 
-    def get(
-        self,
-        path: Optional[str] = None,
-        default: Optional[Any] = None,
-        keys: Optional[list[Union[str, tuple[str, Callable]]]] = None,
-        dict_as_ndict: bool = True,
-    ) -> Any:
-        """Get values from the nested dictionary.
-
-        Args:
-            path (Optional[str] = None):
-            keys (Optional[list[Union[str, tuple[str, Callable]]]] = None). Callables should accept self (ndict),
-                path: str 2 arguments.
-        """
-
-        def _get_value_or_default(
-            key: Union[str, Callable], default: Any, path: Optional[str] = None
-        ) -> Any:
-            if isinstance(key, str):
-                try:
-                    return self._get_node(key, dict_as_ndict=dict_as_ndict)
-                except KeyError:
-                    return default
-
-            assert isinstance(key, Callable), f"Unexpected key type: {type(key)}."
-            try:
-                return key(self, path)
-            except:
-                return default
-
-        assert (path is not None or keys is not None) and not (
-            path is not None and keys is not None
-        ), f"Users can only provide path or keys: path: {path is not None}, keys: {keys is not None}."
-
-        if path is not None:
-            try:
-                return self._get_node(path, dict_as_ndict=dict_as_ndict)
-            except KeyError:
-                return default
-
-        return {
-            **{k: _get_value_or_default(k, default) for k in keys if isinstance(k, str)},  # type: ignore
-            **{
-                k[0]: _get_value_or_default(k[1], default, path=k[0])
-                for k in keys  # type: ignore
-                if isinstance(k, tuple)
-            },
-        }
-
     def update(
         self, d: Union[dict, ndict], ignore_none: bool = False, ignore_missing: bool = False
     ) -> None:
@@ -166,42 +103,6 @@ class ndict(NestedBase):
             if (v is None and ignore_none) or (p not in self.flatten_dict and ignore_missing):
                 continue
             self[p] = v(self, p) if isinstance(v, Callable) else v
-
-    def keys(self, max_depth: int = 1) -> list[str]:
-        """Return a list of leave and depth <= depth"""
-
-        def _keys_action(tree: dict, res: list[str], node: Any, path: str, depth: int):
-            if path is not None and (not isinstance(node, dict) or depth == max_depth):
-                res.append(path)
-
-        res = []
-        traverse(tree=self.dict, res=res, actions=_keys_action, depth=max_depth)
-        return res
-
-    def values(self, max_depth: int = 1, dict_as_ndict: bool = True) -> list[Any]:
-        def _values_action(tree: dict, res: list[Any], node: Any, path: str, depth: int):
-            if path is not None and (not isinstance(node, dict) or depth == max_depth):
-                if dict_as_ndict and isinstance(node, dict):
-                    node = ndict(delimiter=self.delimiter).load_state_dict(
-                        {
-                            "dict": node,
-                            "flatten_dict": self._get_flatten_dict_of_subtree(path),
-                            "delimiter": self.delimiter,
-                        }
-                    )
-                res.append(ndict(node) if dict_as_ndict and isinstance(node, dict) else node)
-
-        res = []
-        traverse(tree=self.dict, res=res, actions=_values_action, depth=max_depth)
-        return res
-
-    def items(self, max_depth: int = 1, dict_as_ndict: bool = True) -> list[tuple[str, Any]]:
-        return list(
-            zip(
-                self.keys(max_depth=max_depth),
-                self.values(max_depth=max_depth, dict_as_ndict=dict_as_ndict),
-            )
-        )
 
     # May let the users to cumstomize the conditions.
     def size(self, max_depth: int = 1, ignore_none: bool = False) -> int:
@@ -231,10 +132,6 @@ class ndict(NestedBase):
 
     def json_str(self, sort_keys: bool = False, indent: int = 2) -> str:
         return json.dumps(self.dict, sort_keys=sort_keys, indent=indent)
-
-    def __getitem__(self, key: Union[str, int]) -> Any:
-        path = key if isinstance(key, str) else list(self.keys())[key]
-        return self._get_node(path, dict_as_ndict=True)
 
     def __delitem__(self, path: str) -> None:
         path_list = path.split(self._delimiter)
@@ -305,63 +202,14 @@ class ndict(NestedBase):
             d[path_list[-1]] = value
             self._flatten_dict[path] = value
 
-    def __len__(self) -> int:
-        return len(self.dict)
-
-    def __bool__(self) -> bool:
-        return bool(len(self) > 0)
-
     def __contains__(self, path: str) -> bool:
         if path in self.flatten_dict:
             return True
-
-        nodes = path.split(self._delimiter)
-        d = self.dict
-        for n in nodes:
-            if n not in d:
-                return False
-            d = d[n]
-        return True
-
-    def __eq__(self, other: Union[dict, ndict]) -> bool:
-        other = ndict(other)
-        return self.flatten_dict == other.flatten_dict
-
-    def __str__(self) -> str:
-        return yaml.dump(self.dict, sort_keys=False, indent=2)
-
-    def __repr__(self) -> str:
-        return f"<Nested dictionary of {len(self)} leaves.>: {self.dict}"
+        return super().__contains__(path)
 
     def _init_from_dict(self, d: dict) -> None:
         for k, v in d.items():
             self[k] = v
-
-    def _get_node(self, path: Union[str, list[str]], dict_as_ndict: bool) -> Any:
-        """Return the value of a particular path.
-
-        Return
-            Node value. If the node is a dictionary, __class__(node) will be returned.
-        """
-        if isinstance(path, list):
-            path_list = path
-            path = self.delimiter.join(path)
-        elif isinstance(path, str):
-            path_list = path.split(self.delimiter)
-        else:
-            raise ValueError(f"Unexpected path type: {type(path)}")
-
-        v = reduce(getitem, path_list, self._d)
-
-        if isinstance(v, dict) and dict_as_ndict:
-            states = {
-                "dict": v,
-                "flatten_dict": self._get_flatten_dict_of_subtree(path),
-                "delimiter": self.delimiter,
-            }
-            return ndict(delimiter=self.delimiter).load_state_dict(states)
-        else:
-            return v
 
     def _get_flatten_dict_of_subtree(self, prefix: str) -> dict[str, Any]:
         prefix = f"{prefix}{self.delimiter}"
@@ -381,3 +229,16 @@ class ndict(NestedBase):
         res = {}
         traverse(self.dict, res, flatten_action)
         return res
+
+    def _dict_nested_conversion_before_return(self, path: str, val: Any) -> Any:
+        if self.return_nested and isinstance(val, dict):
+            return self.from_states(
+                {
+                    "dict": val,
+                    "flatten_dict": self._get_flatten_dict_of_subtree(path),
+                    "delimiter": self.delimiter,
+                },
+                return_nested=self.return_nested,
+            )
+        else:
+            return val
