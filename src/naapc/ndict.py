@@ -8,6 +8,7 @@ from typing import Any, Callable, Optional, Union
 
 import yaml
 
+from .base import NestedBase
 from .dict_traverse import traverse
 from .stop_conditions import generate_depth_stop_condition
 
@@ -19,7 +20,7 @@ def in_or_callable(d: Union[ndict, dict], k: Union[str, Callable]) -> bool:
 # TODO: depth change to max_depth.
 # TODO: add comments.
 # TODO: Change keys, values and items to generators.
-class ndict:
+class ndict(NestedBase):
     """Nested dictionary.
 
     Users shouldn't modify the underling data outside of ndict class. Value overwritten is enabled.
@@ -32,25 +33,28 @@ class ndict:
 
     ALL_MISSING_METHODS = ["ignore", "false", "exception"]
 
-    def __init__(self, d: Optional[Union[ndict, dict]] = None, delimiter: str = ";") -> None:
+    def __init__(
+        self,
+        d: Optional[Union[dict, NestedBase]] = None,
+        delimiter: Optional[str] = None,
+        return_nested: bool = True,
+    ) -> None:
+        super().__init__(d=d, delimiter=delimiter, return_nested=return_nested)
         assert isinstance(delimiter, str), f"delimiter must be str, but recieved {type(delimiter)}"
 
-        self._delimiter = delimiter
-        self._d = {}
-        self._flatten_dict = {}
-
-        if isinstance(d, ndict):
-            self.load_state_dict(d.state_dict())
-        elif isinstance(d, dict):
-            for k, v in d.items():
-                self[k] = v
-        else:
-            assert d is None, f"Unexpected type {type(d)}"
+    @classmethod
+    def fast_init(
+        cls,
+        d: Optional[Union[dict, NestedBase]] = None,
+        delimiter: Optional[str] = None,
+        return_nested: bool = True,
+    ):
+        """Fast initialization by assume certain data conditions."""
+        return cls(d=d, delimiter=delimiter, return_nested=return_nested)
 
     @property
-    def dict(self) -> dict:
-        """Underling dictionary. Do not change it!"""
-        return self._d
+    def raw_is_plain(self) -> bool:
+        return True
 
     @property
     def flatten_dict(self) -> dict[str, Any]:
@@ -82,19 +86,23 @@ class ndict:
         }
         self._delimiter = delimiter
 
-    def state_dict(self) -> dict:
+    def data(self) -> dict:
         return {"dict": self.dict, "flatten_dict": self.flatten_dict, "delimiter": self.delimiter}
 
-    def load_state_dict(self, states: Union[dict, ndict]) -> Any:
+    def load_data(self, states: Union[dict, ndict]) -> NestedBase:
         """The delimiter is only for properly initialize the object."""
-        assert isinstance(
-            states["delimiter"], str
-        ), f"Unexpected delimiter type: {states['delimiter']}."
-        delimiter = self.delimiter
-        self._d = states["dict"]
-        self._flatten_dict = states["flatten_dict"]
-        self._delimiter = states["delimiter"]
-        self.delimiter = delimiter
+        if "flatten_dict" in states:
+            self._flatten_dict = states["flatten_dict"]
+            delimiter = self.delimiter
+            self._d = states["dict"]
+            self._delimiter = states["delimiter"]
+            self.delimiter = delimiter
+        else:
+            tmp = self.__class__(
+                d=states["dict"], delimiter=self.delimiter, return_nested=self.return_nested
+            )
+            self._d = tmp.dict
+            self._flatten_dict = tmp.flatten_dict
         return self
 
     def get(
@@ -324,6 +332,10 @@ class ndict:
 
     def __repr__(self) -> str:
         return f"<Nested dictionary of {len(self)} leaves.>: {self.dict}"
+
+    def _init_from_dict(self, d: dict) -> None:
+        for k, v in d.items():
+            self[k] = v
 
     def _get_node(self, path: Union[str, list[str]], dict_as_ndict: bool) -> Any:
         """Return the value of a particular path.
