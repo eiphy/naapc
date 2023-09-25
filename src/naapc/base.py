@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from abc import ABC, abstractclassmethod, abstractmethod, abstractproperty
 from functools import reduce
 from operator import getitem
@@ -19,11 +20,13 @@ class NestedBase(ABC):
         delimiter: Optional[str] = None,
         return_nested: bool = True,
     ):
-        assert isinstance(delimiter, str), f"delimiter must be str, but recieved {type(delimiter)}"
+        assert delimiter is None or isinstance(
+            delimiter, (str)
+        ), f"delimiter must be str, but recieved {type(delimiter)}"
 
         # Public attributes
         self.return_nested = return_nested
-        self.delimiter = delimiter or self.DEFAULT_DELIMITER
+        self._delimiter = delimiter or self.DEFAULT_DELIMITER
 
         self._d = {}
         if d is not None:
@@ -35,17 +38,16 @@ class NestedBase(ABC):
                 raise TypeError(f"Unexpected type: {type(d)}!")
 
     @classmethod
-    def fast_init(
+    def from_states(
         cls,
-        d: Optional[Union[dict, NestedBase]] = None,
+        states: Optional[dict] = None,
+        d: Optional[dict] = None,
         delimiter: Optional[str] = None,
         return_nested: bool = True,
-    ):
-        """Fast initialization by assume certain data conditions."""
-        return cls(d=d, delimiter=delimiter, return_nested=return_nested)
-
-    @classmethod
-    def from_states(cls, states: dict, return_nested: bool = True) -> NestedBase:
+    ) -> NestedBase:
+        if states is None:
+            assert d and delimiter
+            states = {"dict": d, "delimiter": delimiter}
         return cls(return_nested=return_nested).load_states(states)
 
     @abstractproperty
@@ -88,9 +90,38 @@ class NestedBase(ABC):
     def configs(self) -> dict:
         return {"return_nested": self.return_nested}
 
+    @property
+    def flatten_dict(self) -> dict:
+        return self._get_flatten_dict()
+
     def __getitem__(self, key: Union[str, int]) -> Any:
         path = key if isinstance(key, str) else list(self.keys())[key]
         return self._dict_nested_conversion_before_return(path, self._get_node(path))
+
+    def __setitem__(self, path: str, value: Any) -> Any:
+        if isinstance(value, dict):
+            value = self.__class__(d=value, delimiter=self._delimiter).dict
+        elif isinstance(value, NestedBase):
+            value = value.dict
+
+        if self._delimiter not in path:
+            self._d[path] = value
+        else:
+            path_list = path.split(self._delimiter)
+            v = self._d
+            for node in path_list[:-1]:
+                if node not in v:
+                    v[node] = {}
+                v = v[node]
+            v[path_list[-1]] = value
+
+    def __delitem__(self, path: str) -> None:
+        if self.delimiter not in path:
+            del self._d[path]
+            return
+        path_list = path.split(self._delimiter)
+        parent = self._get_node(path_list[:-1])
+        del parent[path[-1]]
 
     def __len__(self) -> int:
         return len(self._d)
@@ -116,6 +147,9 @@ class NestedBase(ABC):
 
     def __repr__(self) -> str:
         return f"<Nested dictionary of {len(self)} subtrees.>: {self.dict}"
+
+    def json(self, indent=2, sort_keys=False) -> str:
+        return json.dumps(self._d, indent=indent, sort_keys=sort_keys)
 
     def states(self) -> dict:
         """Subclasses may provide more attributes."""
@@ -162,8 +196,62 @@ class NestedBase(ABC):
         except KeyError:
             return default
 
+    def update(self, d: Union[dict, NestedBase]) -> None:
+        flatten_dict = d if isinstance(d, dict) else d.flatten_dict
+        for p, v in flatten_dict.items():
+            self[p] = v
+
+    def size(self, max_depth: int = 1, ignore_none: bool = False) -> int:
+        def _size_action(tree: dict, res: list[int], node: Any, path: str, depth: int):
+            if (
+                path is not None
+                and (not isinstance(node, dict) or depth == max_depth)
+                and (not ignore_none or ignore_none and node is not None)
+            ):
+                res[0] += 1
+
+        res = [0]
+        traverse(tree=self.dict, res=res, actions=_size_action, depth=max_depth)
+        return res[0]
+
+    def diff(self, d: Union[NestedBase, dict]) -> dict[str, tuple[Any, Any]]:
+        """Compare the leaves."""
+        d = self.__class__(d)
+        d_flatten_dict = d.flatten_dict
+        res = {}
+        for p, v1 in self.flatten_dict.items():
+            if p not in d_flatten_dict:
+                res[p] = (v1, None)
+            elif v1 != d[p]:
+                res[p] = (v1, d[p])
+        res.update({p: (None, v) for p, v in d_flatten_dict.items() if p not in self})
+        return res
+
+    def _get_flatten_dict(self) -> dict[str, Any]:
+        def flatten_action(tree: dict, res: dict, node: Any, path: str, depth: int) -> None:
+            if not isinstance(node, dict):
+                res[path] = node
+
+        res = {}
+        traverse(self.dict, res, flatten_action)
+        return res
+
     def _init_from_dict(self, d: dict) -> None:
-        self._d = d
+        def _imp(node):
+            if isinstance(node, dict):
+                return {k: _imp(v) for k, v in node.items()}
+            elif isinstance(node, NestedBase):
+                return (
+                    node.dict if node.raw_is_plain else {k: _imp(v) for k, v in node.dict.items()}
+                )
+            elif isinstance(node, list):
+                return [_imp(v) for v in node]
+            elif isinstance(node, tuple):
+                return tuple(_imp(list(node)))
+            else:
+                return node
+
+        self._d = dict(_imp(d))
 
     def _get_node(self, path: Union[list[str], str]) -> Any:
         """Return the value of a particular path.
@@ -176,7 +264,7 @@ class NestedBase(ABC):
 
     def _dict_nested_conversion_before_return(self, path: str, val: Any) -> Any:
         return (
-            self.__class__(d=val, delimiter=self.delimiter, **self.configs)
+            self.__class__.from_states(d=val, delimiter=self.delimiter, **self.configs)
             if self.return_nested and isinstance(val, dict)
             else val
         )

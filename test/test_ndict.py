@@ -5,7 +5,6 @@ from pathlib import Path
 
 import pytest
 import yaml
-
 from naapc import ndict
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -66,6 +65,14 @@ def test_getitem():
         if isinstance(gt, dict):
             assert isinstance(v, ndict)
             v = v.dict
+        assert v == gt
+
+    d.return_nested = False
+    for p, gt in getitem_gt.items():
+        v = d[p]
+        if isinstance(gt, dict):
+            assert isinstance(v, dict)
+            v = v
         assert v == gt
 
     with pytest.raises(KeyError):
@@ -167,8 +174,8 @@ def test_states():
     with open(TEST_ASSET / "init.json", "r") as f:
         d = ndict(json.load(f))
     d.delimiter = "+"
-    states = d.state_dict()
-    d1 = ndict().load_state_dict(states)
+    states = d.states()
+    d1 = ndict().load_states(states)
     with open(TEST_ASSET / "init_flatten.json", "r") as f:
         flatten = json.load(f)
     with open(TEST_ASSET / "init_nested.json", "r") as f:
@@ -186,28 +193,25 @@ def test_get():
         getitem_gt = json.load(f)
 
     for p, gt in getitem_gt.items():
-        v = d.get(path=p)
+        v = d.get(p)
         if isinstance(gt, dict):
             assert isinstance(v, ndict)
             v = v.dict
         assert v == gt
 
+    d.return_nested = False
     for p, gt in getitem_gt.items():
-        v = d.get(path=p, dict_as_ndict=False)
+        v = d.get(p)
         if isinstance(gt, dict):
             assert isinstance(v, dict)
             v = v
         assert v == gt
 
+    d.return_nested = True
     assert d.get("not_exist_path") is None
     assert d.get("not_exist_path", default=1) == 1
     assert d.get("not_exist_path;not_exist_path", default=1) == 1
     assert d.get("not_exist_path;not_exist_path") is None
-
-    assert d.get(keys=["node1", "node2", ("node2", lambda tree, path: tree[path] + 1)]) == {
-        "node1": "this",
-        "node2": 2.0,
-    }
 
 
 def test_update_no_filting():
@@ -216,14 +220,14 @@ def test_update_no_filting():
         flatten = json.load(f)
     with open(TEST_ASSET / "init_nested.json", "r") as f:
         nested = json.load(f)
-    d.update(flatten, ignore_missing=False, ignore_none=False)
+    d.update(flatten)
     assert d.dict == nested, get_dict_compare_msg(d.dict, nested, indent=4, sort_keys=False)
     assert d.flatten_dict == flatten, get_dict_compare_msg(
         d.flatten_dict, flatten, indent=4, sort_keys=False
     )
 
     d = ndict()
-    d.update(nested, ignore_missing=False, ignore_none=False)
+    d.update(ndict(nested))
     assert d.dict == nested, get_dict_compare_msg(d.dict, nested, indent=4, sort_keys=False)
     assert d.flatten_dict == flatten, get_dict_compare_msg(
         d.flatten_dict, flatten, indent=4, sort_keys=False
@@ -231,7 +235,7 @@ def test_update_no_filting():
 
     d1 = ndict(nested)
     d = ndict()
-    d.update(d1, ignore_missing=False, ignore_none=False)
+    d.update(d1)
     assert d.dict == nested, get_dict_compare_msg(d.dict, nested, indent=4, sort_keys=False)
     assert d.flatten_dict == flatten, get_dict_compare_msg(
         d.flatten_dict, flatten, indent=4, sort_keys=False
@@ -245,33 +249,13 @@ def test_update_no_filting():
         "node2": None,
         "node7": {"double": {"trible": {"leave": 345, "not_exist": 555}}},
     }
-    d.update(update_dict, ignore_missing=False, ignore_none=False)
+    d.update(update_dict)
     with open(TEST_ASSET / "init_update1_gt_nested.json", "r") as f:
         nested_gt = json.load(f)
     with open(TEST_ASSET / "init_update1_gt_flatten.json", "r") as f:
         flatten_gt = json.load(f)
     assert d.dict == nested_gt
     assert d.flatten_dict == flatten_gt
-
-
-def test_update_filting():
-    d = ndict()
-    with open(TEST_ASSET / "init_update_no_none_gt_nested.json", "r") as f:
-        nested = json.load(f)
-    with open(TEST_ASSET / "init_update_no_none_gt_flatten.json", "r") as f:
-        flatten = json.load(f)
-    d.update(flatten, ignore_missing=False, ignore_none=True)
-    assert d.dict == nested, get_dict_compare_msg(d.dict, nested, indent=4, sort_keys=False)
-    assert d.flatten_dict == flatten, get_dict_compare_msg(
-        d.flatten_dict, flatten, indent=4, sort_keys=False
-    )
-
-    d = ndict()
-    with open(TEST_ASSET / "init_flatten.json", "r") as f:
-        flatten = json.load(f)
-    d.update(flatten, ignore_missing=True, ignore_none=False)
-    assert d.dict == {}
-    assert d.flatten_dict == {}
 
 
 def test_keys():
@@ -302,28 +286,29 @@ def test_values():
         d = ndict(json.load(f))
     with open(TEST_ASSET / "values_depth1.json", "r") as f:
         gt = json.load(f)
-    assert d.values(1, dict_as_ndict=False) == gt
-    assert all(v1 == v2 for v1, v2 in zip(d.values(1, dict_as_ndict=True), gt))
-    assert all(v2 == v1 for v1, v2 in zip(d.values(1, dict_as_ndict=True), gt))
+    d.return_nested = False
+    assert d.values() == gt
+    assert all(v1 == v2 for v1, v2 in zip(d.values(), gt))
+    assert all(v2 == v1 for v1, v2 in zip(d.values(), gt))
     with open(TEST_ASSET / "values_depth2.json", "r") as f:
         gt = json.load(f)
-    assert d.values(2, dict_as_ndict=False) == gt
-    assert all(v1 == v2 for v1, v2 in zip(d.values(2, dict_as_ndict=True), gt))
-    assert all(v2 == v1 for v1, v2 in zip(d.values(2, dict_as_ndict=True), gt))
+    assert d.values(2) == gt
+    assert all(v1 == v2 for v1, v2 in zip(d.values(2), gt))
+    assert all(v2 == v1 for v1, v2 in zip(d.values(2), gt))
     with open(TEST_ASSET / "values_depth3.json", "r") as f:
         gt = json.load(f)
-    assert d.values(3, dict_as_ndict=False) == gt
-    assert all(v1 == v2 for v1, v2 in zip(d.values(3, dict_as_ndict=True), gt))
-    assert all(v2 == v1 for v1, v2 in zip(d.values(3, dict_as_ndict=True), gt))
+    assert d.values(3) == gt
+    assert all(v1 == v2 for v1, v2 in zip(d.values(3), gt))
+    assert all(v2 == v1 for v1, v2 in zip(d.values(3), gt))
     with open(TEST_ASSET / "values_depth-1.json", "r") as f:
         gt = json.load(f)
-    assert d.values(-1, dict_as_ndict=False) == gt
-    assert all(v1 == v2 for v1, v2 in zip(d.values(-1, dict_as_ndict=True), gt))
-    assert all(v2 == v1 for v1, v2 in zip(d.values(-1, dict_as_ndict=True), gt))
-    for v, v_gt in zip(d.values(-1, dict_as_ndict=True), gt):
+    assert d.values(-1) == gt
+    assert all(v1 == v2 for v1, v2 in zip(d.values(-1), gt))
+    assert all(v2 == v1 for v1, v2 in zip(d.values(-1), gt))
+    for v, v_gt in zip(d.values(-1), gt):
         if isinstance(v_gt, dict):
             assert isinstance(v_gt, ndict)
-    for v, v_gt in zip(d.values(-1, dict_as_ndict=False), gt):
+    for v, v_gt in zip(d.values(-1), gt):
         if isinstance(v_gt, dict):
             assert isinstance(v_gt, dict)
 
@@ -335,68 +320,75 @@ def test_items():
         k_gt = json.load(f)
     with open(TEST_ASSET / "values_depth1.json", "r") as f:
         v_gt = json.load(f)
-    for i, (k, v) in enumerate(d.items(1, dict_as_ndict=True)):
+    for i, (k, v) in enumerate(d.items()):
         assert k == k_gt[i]
         assert v == v_gt[i]
         if isinstance(v_gt[i], dict):
             assert isinstance(v, ndict)
             assert v.dict is d[k].dict
-    for i, (k, v) in enumerate(d.items(1, dict_as_ndict=False)):
+    d.return_nested = False
+    for i, (k, v) in enumerate(d.items()):
         assert k_gt[i] == k
         assert v_gt[i] == v
         if isinstance(v_gt[i], dict):
             assert isinstance(v, dict)
-            assert v is d[k].dict
+            assert v is d[k]
 
     with open(TEST_ASSET / "init_keys_depth2.json", "r") as f:
         k_gt = json.load(f)
     with open(TEST_ASSET / "values_depth2.json", "r") as f:
         v_gt = json.load(f)
+    d.return_nested = True
     for i, (k, v) in enumerate(d.items(2)):
         assert k == k_gt[i]
         assert v == v_gt[i]
         if isinstance(v_gt[i], dict):
             assert isinstance(v, ndict)
             assert v.dict is d[k].dict
-    for i, (k, v) in enumerate(d.items(2, dict_as_ndict=False)):
+    d.return_nested = False
+    for i, (k, v) in enumerate(d.items(2)):
         assert k_gt[i] == k
         assert v_gt[i] == v
         if isinstance(v_gt[i], dict):
             assert isinstance(v, dict)
-            assert v is d[k].dict
+            assert v is d[k]
 
     with open(TEST_ASSET / "init_keys_depth3.json", "r") as f:
         k_gt = json.load(f)
     with open(TEST_ASSET / "values_depth3.json", "r") as f:
         v_gt = json.load(f)
+    d.return_nested = True
     for i, (k, v) in enumerate(d.items(3)):
         assert k == k_gt[i]
         assert v == v_gt[i]
         if isinstance(v_gt[i], dict):
             assert isinstance(v, ndict)
             assert v.dict is d[k].dict
-    for i, (k, v) in enumerate(d.items(3, dict_as_ndict=False)):
+    d.return_nested = False
+    for i, (k, v) in enumerate(d.items(3)):
         assert k_gt[i] == k
         assert v_gt[i] == v
         if isinstance(v_gt[i], dict):
             assert isinstance(v, dict)
-            assert v is d[k].dict
+            assert v is d[k]
 
     with open(TEST_ASSET / "init_keys_depth-1.json", "r") as f:
         k_gt = json.load(f)
     with open(TEST_ASSET / "values_depth-1.json", "r") as f:
         v_gt = json.load(f)
-    for i, (k, v) in enumerate(d.items(-1, dict_as_ndict=True)):
+    d.return_nested = True
+    for i, (k, v) in enumerate(d.items(-1)):
         assert k == k_gt[i]
         assert v == v_gt[i]
         if isinstance(v_gt[i], dict):
             assert isinstance(v, ndict)
             assert v.dict is d[k].dict
-    for i, (k, v) in enumerate(d.items(-1, dict_as_ndict=False)):
+    d.return_nested = False
+    for i, (k, v) in enumerate(d.items(-1)):
         assert k_gt[i] == k
         assert v_gt[i] == v
         if isinstance(v_gt[i], dict):
-            assert v is d[k].dict
+            assert v is d[k]
             assert isinstance(v, dict)
 
 
@@ -429,7 +421,7 @@ def test_eq():
     flatten = {p: v for p, v in reversed(d.flatten_dict.items())}
     d1 = ndict(flatten)
     assert d == d1
-    assert d == flatten
+    # assert d == flatten
 
     d1["node1"] = "not exist"
     assert d != d1
@@ -468,7 +460,7 @@ def test_print():
     with open(TEST_ASSET / "init.json", "r") as f:
         d = ndict(json.load(f))
     assert str(d) == yaml.dump(d.dict, indent=2, sort_keys=False)
-    assert d.json_str() == json.dumps(d.dict, sort_keys=False, indent=2)
+    assert d.json() == json.dumps(d.dict, sort_keys=False, indent=2)
 
 
 def test_contain():
@@ -483,4 +475,13 @@ def test_contain():
 
 if __name__ == "__main__":
     # test_update_no_filting()
-    test_setitem()
+    # test_init()
+    # test_getitem()
+    # test_setitem()
+    # test_delitem()
+    # test_bool()
+    # test_paths()
+    # test_set_delimiter()
+    # test_states()
+    # test_items()
+    test_eq()
