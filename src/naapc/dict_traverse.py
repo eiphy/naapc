@@ -1,4 +1,5 @@
-from typing import Any, Union, Callable, Optional
+from typing import Any, Callable, Optional, Union
+
 from .stop_conditions import generate_depth_stop_condition
 
 
@@ -85,8 +86,8 @@ def _generate_action_pipeline(
         specific_actions = {}
 
     def action_pipeline(tree: Any, res: Any, node: Any, path: str, depth: int) -> None:
-        if path in specific_actions:
-            specific_actions[path](tree, res, node, path, depth)
+        if path in specific_actions:  # type: ignore
+            specific_actions[path](tree, res, node, path, depth)  # type: ignore
         else:
             default_action(tree, res, node, path, depth)
 
