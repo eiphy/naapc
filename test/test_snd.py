@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 import yaml
-from naapc import ndict
+from naapc import snd
 
 ROOT = Path(__file__).resolve().parents[1]
 TEST_SRC_DIR = ROOT / "test"
@@ -24,32 +24,34 @@ def test_init():
     with open(TEST_ASSET / "init_nested.json", "r") as f:
         nested = json.load(f)
 
-    d = ndict(raw)
+    d = snd(raw)
     assert d.dict == nested, get_dict_compare_msg(d.dict, nested, indent=4, sort_keys=False)
     assert d.flatten_dict == flatten, get_dict_compare_msg(
         d.flatten_dict, flatten, indent=4, sort_keys=False
     )
 
-    d1 = ndict(d)
+    d1 = snd(d)
     assert d1.dict is d.dict
-    assert d1.flatten_dict is d.flatten_dict
+    assert d1.flatten_dict == d.flatten_dict
 
-    d2 = ndict(flatten)
+    d2 = snd(flatten)
     assert d2.dict == nested, get_dict_compare_msg(d2.dict, nested, indent=4, sort_keys=False)
     assert d2.flatten_dict == flatten, get_dict_compare_msg(
         d2.flatten_dict, flatten, indent=4, sort_keys=False
     )
 
-    d = ndict()
+    d = snd()
     assert d.dict == {}
     assert d.flatten_dict == {}
     assert d._d == {}
-    assert d._flatten_dict == {}
+
+    d = snd({"raw": [raw, raw, snd(raw)]})
+    assert d.dict == {"raw": [nested, nested, nested]}
 
 
 def test_getitem():
     with open(TEST_ASSET / "init.json", "r") as f:
-        d = ndict(json.load(f))
+        d = snd(json.load(f))
 
     with open(TEST_ASSET / "init_flatten.json", "r") as f:
         flatten = json.load(f)
@@ -63,7 +65,7 @@ def test_getitem():
     for p, gt in getitem_gt.items():
         v = d[p]
         if isinstance(gt, dict):
-            assert isinstance(v, ndict)
+            assert isinstance(v, snd)
             v = v.dict
         assert v == gt
 
@@ -85,14 +87,14 @@ def test_delitem():
     with open(TEST_ASSET / "init_del.json", "r") as f:
         del_gt = json.load(f)
     for p, gt in del_gt.items():
-        d = ndict(deepcopy(raw))
+        d = snd(deepcopy(raw))
         del d[p]
         assert d.dict == gt["dict"]
         assert d.flatten_dict == gt["flatten"]
 
     with open(TEST_ASSET / "init_nested.json", "r") as f:
         nested = json.load(f)
-    d = ndict(deepcopy(raw))
+    d = snd(deepcopy(raw))
     for k in nested.keys():
         del d[k]
     assert d.dict == {}
@@ -102,24 +104,24 @@ def test_delitem():
 def test_setitem():
     with open(TEST_ASSET / "init.json", "r") as f:
         raw = json.load(f)
-    d = ndict(raw)
+    d = snd(raw)
     d["not_exist"] = {"something1": {"something2": 1}}
     assert d["not_exist;something1;something2"] == 1
     d["not_exist"] = {}
     assert "not_exist;something1;something2" not in d.flatten_dict
 
-    d = ndict(raw)
+    d = snd(raw)
     d["not_exist"] = {"something1": {"something2": 1}}
     assert d["not_exist;something1;something2"] == 1
     d["not_exist;something1"] = 1
     assert "not_exist;something1;something2" not in d.flatten_dict
 
-    d = ndict()
+    d = snd()
     d["something"] = {}
     assert d.dict == {"something": {}}
     assert d.flatten_dict == {"something": {}}
 
-    d = ndict({"something": {}})
+    d = snd({"something": {}})
     assert d.dict == {"something": {}}
     assert d.flatten_dict == {"something": {}}
     d["something;node1"] = 1
@@ -130,7 +132,7 @@ def test_setitem():
 
 
 def test_bool():
-    d = ndict()
+    d = snd()
     assert not d
     d["something"] = 1
     assert d
@@ -140,7 +142,7 @@ def test_bool():
 
 def test_paths():
     with open(TEST_ASSET / "init.json", "r") as f:
-        d = ndict(json.load(f))
+        d = snd(json.load(f))
 
     with open(TEST_ASSET / "init_paths.json", "r") as f:
         paths = json.load(f)
@@ -154,14 +156,14 @@ def test_set_delimiter():
         nested = json.load(f)
     with open(TEST_ASSET / "delimiter_flatten.json", "r") as f:
         flatten = json.load(f)
-    d = ndict(raw)
+    d = snd(raw)
     d.delimiter = "."
     assert d.dict == nested, get_dict_compare_msg(d.dict, nested, indent=4, sort_keys=False)
     assert d.flatten_dict == flatten, get_dict_compare_msg(
         d.flatten_dict, flatten, indent=4, sort_keys=False
     )
 
-    d1 = ndict(d)
+    d1 = snd(d)
     with open(TEST_ASSET / "init_flatten.json", "r") as f:
         flatten = json.load(f)
     assert d1.dict == nested, get_dict_compare_msg(d1.dict, nested, indent=4, sort_keys=False)
@@ -172,10 +174,10 @@ def test_set_delimiter():
 
 def test_states():
     with open(TEST_ASSET / "init.json", "r") as f:
-        d = ndict(json.load(f))
+        d = snd(json.load(f))
     d.delimiter = "+"
     states = d.states()
-    d1 = ndict().load_states(states)
+    d1 = snd().load_states(states)
     with open(TEST_ASSET / "init_flatten.json", "r") as f:
         flatten = json.load(f)
     with open(TEST_ASSET / "init_nested.json", "r") as f:
@@ -188,14 +190,14 @@ def test_states():
 
 def test_get():
     with open(TEST_ASSET / "init.json", "r") as f:
-        d = ndict(json.load(f))
+        d = snd(json.load(f))
     with open(TEST_ASSET / "init_getitem.json", "r") as f:
         getitem_gt = json.load(f)
 
     for p, gt in getitem_gt.items():
         v = d.get(p)
         if isinstance(gt, dict):
-            assert isinstance(v, ndict)
+            assert isinstance(v, snd)
             v = v.dict
         assert v == gt
 
@@ -215,7 +217,7 @@ def test_get():
 
 
 def test_update_no_filting():
-    d = ndict()
+    d = snd()
     with open(TEST_ASSET / "init_flatten.json", "r") as f:
         flatten = json.load(f)
     with open(TEST_ASSET / "init_nested.json", "r") as f:
@@ -226,22 +228,22 @@ def test_update_no_filting():
         d.flatten_dict, flatten, indent=4, sort_keys=False
     )
 
-    d = ndict()
-    d.update(ndict(nested))
+    d = snd()
+    d.update(snd(nested))
     assert d.dict == nested, get_dict_compare_msg(d.dict, nested, indent=4, sort_keys=False)
     assert d.flatten_dict == flatten, get_dict_compare_msg(
         d.flatten_dict, flatten, indent=4, sort_keys=False
     )
 
-    d1 = ndict(nested)
-    d = ndict()
+    d1 = snd(nested)
+    d = snd()
     d.update(d1)
     assert d.dict == nested, get_dict_compare_msg(d.dict, nested, indent=4, sort_keys=False)
     assert d.flatten_dict == flatten, get_dict_compare_msg(
         d.flatten_dict, flatten, indent=4, sort_keys=False
     )
 
-    d = ndict(nested)
+    d = snd(nested)
     update_dict = {
         "node1": 1.0,
         "nested;node2": "something",
@@ -260,7 +262,7 @@ def test_update_no_filting():
 
 def test_keys():
     with open(TEST_ASSET / "init.json", "r") as f:
-        d = ndict(json.load(f))
+        d = snd(json.load(f))
 
     with open(TEST_ASSET / "init_keys_depth1.json", "r") as f:
         gt = json.load(f)
@@ -283,7 +285,7 @@ def test_keys():
 
 def test_values():
     with open(TEST_ASSET / "init.json", "r") as f:
-        d = ndict(json.load(f))
+        d = snd(json.load(f))
     with open(TEST_ASSET / "values_depth1.json", "r") as f:
         gt = json.load(f)
     d.return_nested = False
@@ -307,7 +309,7 @@ def test_values():
     assert all(v2 == v1 for v1, v2 in zip(d.values(-1), gt))
     for v, v_gt in zip(d.values(-1), gt):
         if isinstance(v_gt, dict):
-            assert isinstance(v_gt, ndict)
+            assert isinstance(v_gt, snd)
     for v, v_gt in zip(d.values(-1), gt):
         if isinstance(v_gt, dict):
             assert isinstance(v_gt, dict)
@@ -315,7 +317,7 @@ def test_values():
 
 def test_items():
     with open(TEST_ASSET / "init.json", "r") as f:
-        d = ndict(json.load(f))
+        d = snd(json.load(f))
     with open(TEST_ASSET / "init_keys_depth1.json", "r") as f:
         k_gt = json.load(f)
     with open(TEST_ASSET / "values_depth1.json", "r") as f:
@@ -324,7 +326,7 @@ def test_items():
         assert k == k_gt[i]
         assert v == v_gt[i]
         if isinstance(v_gt[i], dict):
-            assert isinstance(v, ndict)
+            assert isinstance(v, snd)
             assert v.dict is d[k].dict
     d.return_nested = False
     for i, (k, v) in enumerate(d.items()):
@@ -343,7 +345,7 @@ def test_items():
         assert k == k_gt[i]
         assert v == v_gt[i]
         if isinstance(v_gt[i], dict):
-            assert isinstance(v, ndict)
+            assert isinstance(v, snd)
             assert v.dict is d[k].dict
     d.return_nested = False
     for i, (k, v) in enumerate(d.items(2)):
@@ -362,7 +364,7 @@ def test_items():
         assert k == k_gt[i]
         assert v == v_gt[i]
         if isinstance(v_gt[i], dict):
-            assert isinstance(v, ndict)
+            assert isinstance(v, snd)
             assert v.dict is d[k].dict
     d.return_nested = False
     for i, (k, v) in enumerate(d.items(3)):
@@ -381,7 +383,7 @@ def test_items():
         assert k == k_gt[i]
         assert v == v_gt[i]
         if isinstance(v_gt[i], dict):
-            assert isinstance(v, ndict)
+            assert isinstance(v, snd)
             assert v.dict is d[k].dict
     d.return_nested = False
     for i, (k, v) in enumerate(d.items(-1)):
@@ -394,7 +396,7 @@ def test_items():
 
 def test_size():
     with open(TEST_ASSET / "init.json", "r") as f:
-        d = ndict(json.load(f))
+        d = snd(json.load(f))
     assert d.size(ignore_none=False) == len(d.keys())
     assert d.size(2, ignore_none=False) == len(d.keys(2))
     assert d.size(3, ignore_none=False) == len(d.keys(3))
@@ -414,12 +416,12 @@ def test_size():
 
 def test_eq():
     with open(TEST_ASSET / "init.json", "r") as f:
-        d = ndict(json.load(f))
+        d = snd(json.load(f))
     d1 = deepcopy(d)
     assert d == d1
 
     flatten = {p: v for p, v in reversed(d.flatten_dict.items())}
-    d1 = ndict(flatten)
+    d1 = snd(flatten)
     assert d == d1
     assert d == flatten
 
@@ -427,7 +429,7 @@ def test_eq():
     assert d != d1
     assert not d == d1
 
-    d1 = ndict(flatten)
+    d1 = snd(flatten)
     d1["Not exist"] = "null"
     assert d != d1
     assert not d == d1
@@ -435,7 +437,7 @@ def test_eq():
 
 def test_diff():
     with open(TEST_ASSET / "init.json", "r") as f:
-        d = ndict(json.load(f))
+        d = snd(json.load(f))
     d1 = deepcopy(d)
     assert d.diff(d1) == {} and isinstance(d.diff(d1), dict)
     d1["node"] = "not"
@@ -448,7 +450,7 @@ def test_diff():
 
 def test_len():
     with open(TEST_ASSET / "init.json", "r") as f:
-        d = ndict(json.load(f))
+        d = snd(json.load(f))
     assert len(d) == d.size()
 
     for k in d.keys():
@@ -458,17 +460,17 @@ def test_len():
 
 def test_print():
     with open(TEST_ASSET / "init.json", "r") as f:
-        d = ndict(json.load(f))
+        d = snd(json.load(f))
     assert str(d) == yaml.dump(d.dict, indent=2, sort_keys=False)
     assert d.json() == json.dumps(d.dict, sort_keys=False, indent=2)
 
 
 def test_contain():
     with open(TEST_ASSET / "init.json", "r") as f:
-        d = ndict(json.load(f))
+        d = snd(json.load(f))
     assert "node1" in d
     assert "not exist" not in d
-    d = ndict()
+    d = snd()
     assert "node1" not in d
     assert "not exist" not in d
 
@@ -478,10 +480,11 @@ if __name__ == "__main__":
     # test_init()
     # test_getitem()
     # test_setitem()
-    # test_delitem()
+    test_delitem()
     # test_bool()
     # test_paths()
     # test_set_delimiter()
     # test_states()
     # test_items()
-    test_eq()
+    # test_eq()
+    # test_get()

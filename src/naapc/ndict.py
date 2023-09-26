@@ -174,10 +174,6 @@ class ndict(NestedBase):
             return True
         return super().__contains__(path)
 
-    def _init_from_dict(self, d: dict) -> None:
-        for k, v in d.items():
-            self[k] = v
-
     def _get_flatten_dict_of_subtree(self, prefix: str) -> dict[str, Any]:
         prefix = f"{prefix}{self.delimiter}"
         return deepcopy(

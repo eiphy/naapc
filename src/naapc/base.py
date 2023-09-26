@@ -98,11 +98,19 @@ class NestedBase(ABC):
         path = key if isinstance(key, str) else list(self.keys())[key]
         return self._dict_nested_conversion_before_return(path, self._get_node(path))
 
+    # Option to prevent overwriting.
     def __setitem__(self, path: str, value: Any) -> Any:
         if isinstance(value, dict):
             value = self.__class__(d=value, delimiter=self._delimiter).dict
         elif isinstance(value, NestedBase):
             value = value.dict
+        elif isinstance(value, (list, tuple, set)):
+            value = value.__class__(
+                [
+                    self.__class__(d=x).dict if isinstance(x, (NestedBase, dict)) else x
+                    for x in value
+                ]
+            )
 
         if self._delimiter not in path:
             self._d[path] = value
@@ -110,7 +118,7 @@ class NestedBase(ABC):
             path_list = path.split(self._delimiter)
             v = self._d
             for node in path_list[:-1]:
-                if node not in v:
+                if node not in v or not isinstance(v[node], dict):
                     v[node] = {}
                 v = v[node]
             v[path_list[-1]] = value
@@ -121,7 +129,7 @@ class NestedBase(ABC):
             return
         path_list = path.split(self._delimiter)
         parent = self._get_node(path_list[:-1])
-        del parent[path[-1]]
+        del parent[path_list[-1]]
 
     def __len__(self) -> int:
         return len(self._d)
@@ -139,8 +147,7 @@ class NestedBase(ABC):
         return True
 
     def __eq__(self, other: Union[dict, NestedBase]) -> bool:
-        other = other.dict if isinstance(other, NestedBase) else other
-        return self._d == other
+        return self.dict == self.__class__(other).dict
 
     def __str__(self) -> str:
         return yaml.dump(self.dict, sort_keys=False, indent=2)
@@ -157,7 +164,6 @@ class NestedBase(ABC):
 
     def load_states(self, states: dict) -> NestedBase:
         self._d = states["dict"]
-        self.delimiter = states["delimiter"]
         return self
 
     # TODO: Make it a generator.
@@ -197,7 +203,7 @@ class NestedBase(ABC):
             return default
 
     def update(self, d: Union[dict, NestedBase]) -> None:
-        flatten_dict = d if isinstance(d, dict) else d.flatten_dict
+        flatten_dict = self.__class__(d).flatten_dict
         for p, v in flatten_dict.items():
             self[p] = v
 
@@ -229,7 +235,8 @@ class NestedBase(ABC):
 
     def _get_flatten_dict(self) -> dict[str, Any]:
         def flatten_action(tree: dict, res: dict, node: Any, path: str, depth: int) -> None:
-            if not isinstance(node, dict):
+            if (path is not None) and (not isinstance(node, dict) or not node):
+                path = path.replace(";", self._delimiter)
                 res[path] = node
 
         res = {}
@@ -237,21 +244,8 @@ class NestedBase(ABC):
         return res
 
     def _init_from_dict(self, d: dict) -> None:
-        def _imp(node):
-            if isinstance(node, dict):
-                return {k: _imp(v) for k, v in node.items()}
-            elif isinstance(node, NestedBase):
-                return (
-                    node.dict if node.raw_is_plain else {k: _imp(v) for k, v in node.dict.items()}
-                )
-            elif isinstance(node, list):
-                return [_imp(v) for v in node]
-            elif isinstance(node, tuple):
-                return tuple(_imp(list(node)))
-            else:
-                return node
-
-        self._d = dict(_imp(d))
+        for k, v in d.items():
+            self[k] = v
 
     def _get_node(self, path: Union[list[str], str]) -> Any:
         """Return the value of a particular path.
