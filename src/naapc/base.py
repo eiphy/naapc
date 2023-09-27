@@ -46,7 +46,7 @@ class NestedBase(ABC):
         return_nested: bool = True,
     ) -> NestedBase:
         if states is None:
-            assert d and delimiter
+            assert d is not None and delimiter
             states = {"dict": d, "delimiter": delimiter}
         return cls(return_nested=return_nested).load_states(states)
 

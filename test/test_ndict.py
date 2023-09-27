@@ -185,6 +185,10 @@ def test_states():
         d1.flatten_dict, flatten, indent=4, sort_keys=False
     )
 
+    d = ndict.from_states(d={}, delimiter=";")
+    assert d.dict == {}
+    assert d.flatten_dict == {}
+
 
 def test_get():
     with open(TEST_ASSET / "init.json", "r") as f:

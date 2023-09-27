@@ -50,7 +50,7 @@ class ndict(NestedBase):
         return_nested: bool = True,
     ) -> NestedBase:
         if states is None:
-            assert d and delimiter
+            assert d is not None and delimiter
             assert isinstance(d, dict), f"Wrong type: {type(d)}."
             states = (
                 {"dict": d, "delimiter": delimiter, "flatten_dict": flatten_dict}
